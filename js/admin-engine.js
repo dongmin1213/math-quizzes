@@ -37,6 +37,9 @@
       document.getElementById('mainSection').classList.remove('hidden');
       this.populateTopics();
       this.loadDeployedStatus();
+      // 버전 표시
+      var vb = document.getElementById('versionBadge');
+      if (vb && MathQuiz.config.VERSION) vb.textContent = MathQuiz.config.VERSION;
     },
 
     // 탭 전환
