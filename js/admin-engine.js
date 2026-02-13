@@ -50,6 +50,13 @@
           this.classList.add('active');
           document.getElementById('tab-' + target).classList.add('active');
 
+          if (target === 'deployed') {
+            // 첫 진입 시 중1 자동 로드
+            var area = document.getElementById('deployedQuizArea');
+            if (area && area.querySelector('.message-info')) {
+              MathQuiz.admin.loadDeployedQuiz(1);
+            }
+          }
           if (target === 'results') {
             MathQuiz.admin.loadResults();
           }
@@ -455,6 +462,107 @@
       var grade = document.getElementById('filterGrade').value;
       var topic = document.getElementById('filterTopic').value;
       this.renderResults(allResults, { grade: grade, topic: topic });
+    },
+
+    // 배포된 문제 보기
+    loadDeployedQuiz: function(grade) {
+      var area = document.getElementById('deployedQuizArea');
+      if (!area) return;
+
+      // 버튼 활성화 표시
+      var btns = area.parentNode.querySelectorAll('.btn-outline');
+      for (var b = 0; b < btns.length; b++) {
+        btns[b].classList.remove('btn-primary');
+        btns[b].classList.add('btn-outline');
+      }
+      btns[grade - 1].classList.remove('btn-outline');
+      btns[grade - 1].classList.add('btn-primary');
+
+      // 로컬 모드
+      if (!MathQuiz.config.APPS_SCRIPT_URL) {
+        var local = localStorage.getItem('localQuiz_grade' + grade);
+        if (!local) {
+          area.innerHTML = '<div class="message message-info">중' + grade + ' 퀴즈가 아직 배포되지 않았습니다.</div>';
+          return;
+        }
+        var data = JSON.parse(local);
+        MathQuiz.admin.renderDeployedQuiz(data, grade);
+        return;
+      }
+
+      area.innerHTML = '<div class="loading"><div class="spinner"></div><p style="margin-top:8px">문제를 불러오는 중...</p></div>';
+
+      MathQuiz.api.loadQuiz(grade)
+        .then(function(res) {
+          if (res.success) {
+            MathQuiz.admin.renderDeployedQuiz(res.data, grade);
+          } else {
+            area.innerHTML = '<div class="message message-info">' + (res.error || '중' + grade + ' 퀴즈가 아직 배포되지 않았습니다.') + '</div>';
+          }
+        }).catch(function() {
+          area.innerHTML = '<div class="message message-error">서버 연결 실패</div>';
+        });
+    },
+
+    renderDeployedQuiz: function(data, grade) {
+      var area = document.getElementById('deployedQuizArea');
+      var problems = data.fullProblems || data.problems || [];
+      var time = data.createdAt ? new Date(data.createdAt).toLocaleString('ko-KR') : '';
+
+      var html = '<div class="card" style="margin-bottom:16px;padding:16px">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">';
+      html += '<div><strong style="font-size:18px">중' + grade + ' - ' + (data.topic || '') + '</strong>';
+      html += '<span style="margin-left:12px;font-size:14px;color:var(--text-light)">' + problems.length + '문제</span></div>';
+      html += '<div style="font-size:13px;color:var(--text-light)">' + time + '</div>';
+      html += '</div></div>';
+
+      html += '<div class="preview-list">';
+      for (var i = 0; i < problems.length; i++) {
+        var p = problems[i];
+        var typeLabel = p.type === 'multiple-choice' ? '객관식' : '주관식';
+        var typeClass = p.type === 'multiple-choice' ? 'mc' : 'sa';
+
+        html += '<div class="preview-item">';
+        html += '<span class="problem-number">문제 ' + (i + 1) + '</span>';
+        html += '<span class="problem-type-badge ' + typeClass + '">' + typeLabel + '</span>';
+        html += '<div class="problem-question" data-math-text="' + escapeAttr(p.questionText) + '" style="margin:10px 0"></div>';
+
+        if (p.questionLatex) {
+          html += '<div data-latex="' + escapeAttr(p.questionLatex) + '" data-display style="margin:8px 0"></div>';
+        }
+
+        if (p.svg) {
+          html += '<div class="problem-svg">' + p.svg + '</div>';
+        }
+
+        if (p.type === 'multiple-choice' && p.choices) {
+          var labels = ['\u2460', '\u2461', '\u2462', '\u2463'];
+          html += '<div style="margin:8px 0;font-size:14px">';
+          for (var j = 0; j < p.choices.length; j++) {
+            var mark = j === p.answerIndex ? ' <strong style="color:var(--success)">[정답]</strong>' : '';
+            html += '<div style="padding:4px 0">' + labels[j] + ' <span data-math-text="' +
+              escapeAttr(p.choices[j]) + '"></span>' + mark + '</div>';
+          }
+          html += '</div>';
+        } else {
+          html += '<div style="font-size:14px;color:var(--success)">정답: <span data-math-text="' +
+            escapeAttr(p.answer) + '"></span></div>';
+        }
+
+        if (p.explanation) {
+          html += '<div style="font-size:13px;color:var(--text-light);margin-top:6px">해설: <span data-math-text="' +
+            escapeAttr(p.explanation) + '"></span></div>';
+        }
+
+        html += '</div>';
+      }
+      html += '</div>';
+
+      area.innerHTML = html;
+
+      if (typeof MathQuiz.renderMath === 'function') {
+        MathQuiz.renderMath(area);
+      }
     }
   };
 
