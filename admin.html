@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="container">
+  <div class="container admin-container">
     <!-- 로그인 -->
     <div id="loginSection">
       <div class="password-gate">
@@ -38,77 +38,84 @@
 
       <!-- 퀴즈 생성 탭 -->
       <div id="tab-generate" class="tab-content active">
-        <div class="card">
-          <div class="form-group">
-            <label for="genGrade">학년</label>
-            <select id="genGrade">
-              <option value="">학년을 선택하세요</option>
-              <option value="1">중학교 1학년</option>
-              <option value="2">중학교 2학년</option>
-              <option value="3">중학교 3학년</option>
-            </select>
+        <div class="generate-grid">
+          <!-- 왼쪽: 설정 패널 -->
+          <div class="generate-settings">
+            <div class="card">
+              <div class="form-group">
+                <label for="genGrade">학년</label>
+                <select id="genGrade">
+                  <option value="">학년을 선택하세요</option>
+                  <option value="1">중학교 1학년</option>
+                  <option value="2">중학교 2학년</option>
+                  <option value="3">중학교 3학년</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="genTopic">단원</label>
+                <select id="genTopic">
+                  <option value="">먼저 학년을 선택하세요</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="genCount">문제 수</label>
+                <select id="genCount">
+                  <option value="5">5문제</option>
+                  <option value="10" selected>10문제</option>
+                  <option value="15">15문제</option>
+                  <option value="20">20문제</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="genDifficulty">난이도</label>
+                <select id="genDifficulty">
+                  <option value="1">하 (기본)</option>
+                  <option value="2" selected>중 (보통)</option>
+                  <option value="3">상 (심화)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="genMcRatio">객관식 비율</label>
+                <select id="genMcRatio">
+                  <option value="100">100% (전부 객관식)</option>
+                  <option value="70" selected>70% (객관식 위주)</option>
+                  <option value="50">50% (반반)</option>
+                  <option value="30">30% (주관식 위주)</option>
+                  <option value="0">0% (전부 주관식)</option>
+                </select>
+              </div>
+
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="MathQuiz.admin.generate()">
+                  문제 생성하기
+                </button>
+              </div>
+
+              <div id="genStatus" style="margin-top:16px"></div>
+            </div>
+
+            <!-- 배포 -->
+            <div id="deploySection" class="hidden">
+              <div class="card">
+                <h3 style="margin-bottom:12px">퀴즈 배포</h3>
+                <p style="color:var(--text-light);font-size:14px;margin-bottom:16px">
+                  아래 버튼을 누르면 학생들이 바로 이 문제를 풀 수 있습니다.
+                </p>
+                <button id="deployBtn" class="btn btn-success" onclick="MathQuiz.admin.deploy()">
+                  배포하기
+                </button>
+                <div id="deployStatus" style="margin-top:12px"></div>
+              </div>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="genTopic">단원</label>
-            <select id="genTopic">
-              <option value="">먼저 학년을 선택하세요</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="genCount">문제 수</label>
-            <select id="genCount">
-              <option value="5">5문제</option>
-              <option value="10" selected>10문제</option>
-              <option value="15">15문제</option>
-              <option value="20">20문제</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="genDifficulty">난이도</label>
-            <select id="genDifficulty">
-              <option value="1">하 (기본)</option>
-              <option value="2" selected>중 (보통)</option>
-              <option value="3">상 (심화)</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="genMcRatio">객관식 비율</label>
-            <select id="genMcRatio">
-              <option value="100">100% (전부 객관식)</option>
-              <option value="70" selected>70% (객관식 위주)</option>
-              <option value="50">50% (반반)</option>
-              <option value="30">30% (주관식 위주)</option>
-              <option value="0">0% (전부 주관식)</option>
-            </select>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn btn-primary" onclick="MathQuiz.admin.generate()">
-              문제 생성하기
-            </button>
-          </div>
-
-          <div id="genStatus" style="margin-top:16px"></div>
-        </div>
-
-        <!-- 미리보기 -->
-        <div id="previewArea"></div>
-
-        <!-- 배포 -->
-        <div id="deploySection" class="hidden" style="margin-top:16px">
-          <div class="card">
-            <h3 style="margin-bottom:12px">퀴즈 배포</h3>
-            <p style="color:var(--text-light);font-size:14px;margin-bottom:16px">
-              아래 버튼을 누르면 학생들이 바로 이 문제를 풀 수 있습니다.
-            </p>
-            <button id="deployBtn" class="btn btn-success" onclick="MathQuiz.admin.deploy()">
-              배포하기
-            </button>
-            <div id="deployStatus" style="margin-top:12px"></div>
+          <!-- 오른쪽: 미리보기 -->
+          <div class="generate-preview">
+            <div id="previewArea"></div>
           </div>
         </div>
       </div>

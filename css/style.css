@@ -509,10 +509,44 @@ body {
   display: block;
 }
 
+/* 관리자 좌우 그리드 */
+.generate-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.generate-settings .card {
+  margin-bottom: 16px;
+}
+
+@media (min-width: 900px) {
+  .admin-container {
+    max-width: 1200px;
+  }
+
+  .generate-grid {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .generate-settings {
+    width: 320px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 16px;
+  }
+
+  .generate-preview {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 /* 문제 미리보기 */
 .preview-list {
-  max-height: 500px;
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
   margin: 16px 0;
   border: 1px solid var(--border);
   border-radius: var(--radius);
