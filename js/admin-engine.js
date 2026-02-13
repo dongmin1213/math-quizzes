@@ -231,6 +231,7 @@
 
       deployBtn.disabled = true;
       deployBtn.textContent = '배포 중...';
+      deployStatus.innerHTML = '<div class="message message-info" style="font-size:13px">Google 서버에 전송 중입니다. 처음에는 최대 10초 정도 걸릴 수 있습니다.</div>';
 
       MathQuiz.api.deployQuiz({
         password: sessionStorage.getItem('adminAuth'),
@@ -264,7 +265,7 @@
         return;
       }
 
-      container.innerHTML = '<div class="loading"><div class="spinner"></div><p style="margin-top:8px">결과를 불러오는 중...</p></div>';
+      container.innerHTML = '<div class="loading"><div class="spinner"></div><p style="margin-top:8px">결과를 불러오는 중...</p><p style="font-size:13px;color:var(--text-light)">처음에는 최대 10초 정도 걸릴 수 있습니다.</p></div>';
 
       MathQuiz.api.getResults(sessionStorage.getItem('adminAuth'))
         .then(function(res) {

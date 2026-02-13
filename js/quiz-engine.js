@@ -224,8 +224,20 @@
       // 결과 저장 (result 페이지에서 사용)
       sessionStorage.setItem('quizResult', JSON.stringify(result));
 
-      // 서버에 제출
+      var goToResult = function() { window.location.href = 'result.html'; };
+
+      // 서버에 제출 (완료 후 결과 페이지로 이동)
       if (MathQuiz.config.APPS_SCRIPT_URL && !sessionStorage.getItem('testMode')) {
+        // 제출 중 표시
+        var submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = '제출 중...';
+        }
+
+        // 10초 안에 응답 없으면 그냥 이동 (타임아웃 안전장치)
+        var timeout = setTimeout(goToResult, 10000);
+
         MathQuiz.api.submitResult({
           studentName: state.studentInfo.name,
           grade: state.studentInfo.grade,
@@ -235,13 +247,17 @@
           score: result.score,
           total: result.total,
           wrongProblems: result.wrongProblems
+        }).then(function() {
+          clearTimeout(timeout);
+          goToResult();
         }).catch(function(err) {
           console.error('결과 제출 실패:', err);
+          clearTimeout(timeout);
+          goToResult();
         });
+      } else {
+        goToResult();
       }
-
-      // 결과 페이지로 이동
-      window.location.href = 'result.html';
     },
 
     grade: function() {
