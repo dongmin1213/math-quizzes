@@ -694,6 +694,41 @@ body {
   }
 }
 
+/* 학년 선택 버튼 그룹 */
+.grade-btn-group {
+  display: inline-flex;
+  gap: 0;
+  margin-bottom: 20px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.grade-btn {
+  padding: 8px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  border-right: 1px solid var(--border);
+}
+
+.grade-btn:last-child {
+  border-right: none;
+}
+
+.grade-btn:hover {
+  background: var(--primary-light);
+}
+
+.grade-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
 /* 배포 현황 그리드 */
 .deploy-status-grid {
   display: grid;

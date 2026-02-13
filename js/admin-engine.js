@@ -470,13 +470,12 @@
       if (!area) return;
 
       // 버튼 활성화 표시
-      var btns = area.parentNode.querySelectorAll('.btn-outline');
+      var btns = document.querySelectorAll('.grade-btn');
       for (var b = 0; b < btns.length; b++) {
-        btns[b].classList.remove('btn-primary');
-        btns[b].classList.add('btn-outline');
+        btns[b].classList.remove('active');
       }
-      btns[grade - 1].classList.remove('btn-outline');
-      btns[grade - 1].classList.add('btn-primary');
+      var clicked = document.querySelector('.grade-btn[data-grade="' + grade + '"]');
+      if (clicked) clicked.classList.add('active');
 
       // 로컬 모드
       if (!MathQuiz.config.APPS_SCRIPT_URL) {

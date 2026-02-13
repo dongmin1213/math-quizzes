@@ -127,10 +127,10 @@
 
       <!-- 배포 문제 보기 탭 -->
       <div id="tab-deployed" class="tab-content">
-        <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
-          <button class="btn btn-outline" onclick="MathQuiz.admin.loadDeployedQuiz(1)">중1</button>
-          <button class="btn btn-outline" onclick="MathQuiz.admin.loadDeployedQuiz(2)">중2</button>
-          <button class="btn btn-outline" onclick="MathQuiz.admin.loadDeployedQuiz(3)">중3</button>
+        <div class="grade-btn-group">
+          <button class="grade-btn" data-grade="1" onclick="MathQuiz.admin.loadDeployedQuiz(1)">중1</button>
+          <button class="grade-btn" data-grade="2" onclick="MathQuiz.admin.loadDeployedQuiz(2)">중2</button>
+          <button class="grade-btn" data-grade="3" onclick="MathQuiz.admin.loadDeployedQuiz(3)">중3</button>
         </div>
         <div id="deployedQuizArea">
           <div class="message message-info">학년을 선택하면 배포된 문제를 확인할 수 있습니다.</div>
