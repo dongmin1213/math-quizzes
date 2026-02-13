@@ -2,6 +2,7 @@
 (function() {
   var currentProblems = null;
   var isAuthenticated = false;
+  var allResults = null;
 
   MathQuiz.admin = {
     init: function() {
@@ -35,6 +36,7 @@
       document.getElementById('loginSection').classList.add('hidden');
       document.getElementById('mainSection').classList.remove('hidden');
       this.populateTopics();
+      this.loadDeployedStatus();
     },
 
     // 탭 전환
@@ -94,6 +96,74 @@
       }
     },
 
+    // 배포 현황 조회
+    loadDeployedStatus: function() {
+      var container = document.getElementById('deployedStatusArea');
+      if (!container) return;
+
+      if (!MathQuiz.config.APPS_SCRIPT_URL) {
+        // 로컬 모드
+        var html = '<h3 style="margin-bottom:12px">학년별 배포 현황</h3>';
+        html += '<div class="deploy-status-grid">';
+        for (var g = 1; g <= 3; g++) {
+          var local = localStorage.getItem('localQuiz_grade' + g);
+          var data = local ? JSON.parse(local) : null;
+          html += '<div class="deploy-status-card' + (data ? ' active' : '') + '">';
+          html += '<div class="deploy-grade">중' + g + '</div>';
+          if (data) {
+            html += '<div class="deploy-topic">' + (data.topic || '-') + '</div>';
+            html += '<div class="deploy-detail">' + (data.problemCount || 0) + '문제</div>';
+            var time = data.createdAt ? new Date(data.createdAt).toLocaleString('ko-KR') : '';
+            html += '<div class="deploy-detail">' + time + '</div>';
+          } else {
+            html += '<div class="deploy-empty">미배포</div>';
+          }
+          html += '</div>';
+        }
+        html += '</div>';
+        container.innerHTML = html;
+        return;
+      }
+
+      container.innerHTML = '<div style="text-align:center;padding:8px;color:var(--text-light);font-size:13px">배포 현황 조회 중...</div>';
+
+      MathQuiz.api.getDeployedStatus(sessionStorage.getItem('adminAuth'))
+        .then(function(res) {
+          if (res.success) {
+            MathQuiz.admin.renderDeployedStatus(res.data);
+          } else {
+            container.innerHTML = '<div class="message message-error">' + (res.error || '조회 실패') + '</div>';
+          }
+        }).catch(function() {
+          container.innerHTML = '<div class="message message-error">배포 현황 조회 실패</div>';
+        });
+    },
+
+    renderDeployedStatus: function(statuses) {
+      var container = document.getElementById('deployedStatusArea');
+      var html = '<h3 style="margin-bottom:12px">학년별 배포 현황</h3>';
+      html += '<div class="deploy-status-grid">';
+
+      for (var i = 0; i < statuses.length; i++) {
+        var s = statuses[i];
+        var hasQuiz = !!s.quizId;
+        html += '<div class="deploy-status-card' + (hasQuiz ? ' active' : '') + '">';
+        html += '<div class="deploy-grade">중' + s.grade + '</div>';
+        if (hasQuiz) {
+          html += '<div class="deploy-topic">' + s.topic + '</div>';
+          html += '<div class="deploy-detail">' + s.problemCount + '문제</div>';
+          var time = s.createdAt ? new Date(s.createdAt).toLocaleString('ko-KR') : '';
+          html += '<div class="deploy-detail">' + time + '</div>';
+        } else {
+          html += '<div class="deploy-empty">미배포</div>';
+        }
+        html += '</div>';
+      }
+
+      html += '</div>';
+      container.innerHTML = html;
+    },
+
     // 문제 생성
     generate: function() {
       var grade = parseInt(document.getElementById('genGrade').value);
@@ -103,7 +173,6 @@
       var mcRatio = parseInt(document.getElementById('genMcRatio').value) / 100;
 
       var statusEl = document.getElementById('genStatus');
-      var previewEl = document.getElementById('previewArea');
 
       if (!grade || !topicId) {
         statusEl.innerHTML = '<div class="message message-error">학년과 단원을 선택해주세요.</div>';
@@ -214,7 +283,7 @@
           '<strong>로컬 테스트 모드:</strong> 문제가 브라우저에 저장됩니다.<br>' +
           '실제 배포하려면 config.js에 APPS_SCRIPT_URL을 설정하세요.</div>';
 
-        // 로컬 스토리지에 저장 (테스트용)
+        // 로컬 스토리지에 학년별로 저장
         var quizData = {
           quizId: 'local-' + Date.now(),
           grade: grade,
@@ -224,8 +293,9 @@
           problems: currentProblems,
           fullProblems: currentProblems
         };
-        localStorage.setItem('localQuiz', JSON.stringify(quizData));
-        deployStatus.innerHTML += '<div class="message message-success" style="margin-top:8px">로컬 저장 완료! 학생 페이지에서 테스트할 수 있습니다.</div>';
+        localStorage.setItem('localQuiz_grade' + grade, JSON.stringify(quizData));
+        deployStatus.innerHTML += '<div class="message message-success" style="margin-top:8px">로컬 저장 완료! 중' + grade + ' 학생 페이지에서 테스트할 수 있습니다.</div>';
+        this.loadDeployedStatus();
         return;
       }
 
@@ -241,15 +311,16 @@
       }).then(function(res) {
         if (res.success) {
           deployStatus.innerHTML = '<div class="message message-success">' +
-            '배포 완료! 학생들이 바로 퀴즈를 풀 수 있습니다.<br>' +
+            '배포 완료! 중' + grade + ' 학생들이 바로 퀴즈를 풀 수 있습니다.<br>' +
             '퀴즈 ID: ' + res.quizId + '</div>';
+          MathQuiz.admin.loadDeployedStatus();
         } else {
           deployStatus.innerHTML = '<div class="message message-error">배포 실패: ' +
             (res.error || '알 수 없는 오류') + '</div>';
         }
         deployBtn.disabled = false;
         deployBtn.textContent = '배포하기';
-      }).catch(function(err) {
+      }).catch(function() {
         deployStatus.innerHTML = '<div class="message message-error">서버 연결 실패. 인터넷을 확인해주세요.</div>';
         deployBtn.disabled = false;
         deployBtn.textContent = '배포하기';
@@ -270,36 +341,84 @@
       MathQuiz.api.getResults(sessionStorage.getItem('adminAuth'))
         .then(function(res) {
           if (res.success) {
-            MathQuiz.admin.renderResults(res.data);
+            MathQuiz.admin.renderResults(res.data, {});
           } else {
             container.innerHTML = '<div class="message message-error">' + (res.error || '조회 실패') + '</div>';
           }
-        }).catch(function(err) {
+        }).catch(function() {
           container.innerHTML = '<div class="message message-error">서버 연결 실패</div>';
         });
     },
 
-    renderResults: function(data) {
+    renderResults: function(data, filters) {
       var container = document.getElementById('resultsContainer');
+      allResults = data;
 
       if (!data || data.length === 0) {
         container.innerHTML = '<div class="message message-info">아직 제출된 결과가 없습니다.</div>';
         return;
       }
 
+      filters = filters || {};
+
+      // 필터 적용
+      var filtered = data;
+      if (filters.grade) {
+        var gradeFiltered = [];
+        for (var k = 0; k < filtered.length; k++) {
+          if (String(filtered[k]['학년']) === String(filters.grade)) {
+            gradeFiltered.push(filtered[k]);
+          }
+        }
+        filtered = gradeFiltered;
+      }
+      if (filters.topic) {
+        var topicFiltered = [];
+        for (var k2 = 0; k2 < filtered.length; k2++) {
+          if (filtered[k2]['단원'] === filters.topic) {
+            topicFiltered.push(filtered[k2]);
+          }
+        }
+        filtered = topicFiltered;
+      }
+
+      // 필터 UI
+      var html = '';
+      html += '<div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">';
+      html += '<select id="filterGrade" onchange="MathQuiz.admin.applyFilters()" style="padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;background:#fff">';
+      html += '<option value="">전체 학년</option>';
+      html += '<option value="1"' + (filters.grade === '1' ? ' selected' : '') + '>중1</option>';
+      html += '<option value="2"' + (filters.grade === '2' ? ' selected' : '') + '>중2</option>';
+      html += '<option value="3"' + (filters.grade === '3' ? ' selected' : '') + '>중3</option>';
+      html += '</select>';
+
+      // 단원 목록 수집
+      var topicSet = {};
+      for (var t = 0; t < data.length; t++) {
+        if (data[t]['단원']) topicSet[data[t]['단원']] = true;
+      }
+      html += '<select id="filterTopic" onchange="MathQuiz.admin.applyFilters()" style="padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;background:#fff">';
+      html += '<option value="">전체 단원</option>';
+      for (var topicName in topicSet) {
+        html += '<option value="' + escapeAttr(topicName) + '"' + (filters.topic === topicName ? ' selected' : '') + '>' + topicName + '</option>';
+      }
+      html += '</select>';
+      html += '</div>';
+
       // 통계
-      var totalScore = 0, totalCount = data.length;
-      for (var i = 0; i < data.length; i++) {
-        var pct = data[i]['총문제수'] > 0 ? data[i]['점수'] / data[i]['총문제수'] * 100 : 0;
+      var totalScore = 0, totalCount = filtered.length;
+      for (var i = 0; i < filtered.length; i++) {
+        var pct = filtered[i]['총문제수'] > 0 ? filtered[i]['점수'] / filtered[i]['총문제수'] * 100 : 0;
         totalScore += pct;
       }
-      var avgScore = (totalScore / totalCount).toFixed(1);
+      var avgScore = totalCount > 0 ? (totalScore / totalCount).toFixed(1) : '0.0';
 
-      var html = '';
       html += '<div class="stats-grid">';
       html += '<div class="stat-card"><div class="stat-value">' + totalCount + '</div><div class="stat-label">제출 수</div></div>';
       html += '<div class="stat-card"><div class="stat-value">' + avgScore + '%</div><div class="stat-label">평균 정답률</div></div>';
-      html += '<div class="stat-card"><div class="stat-value">' + data[data.length - 1]['단원'] + '</div><div class="stat-label">최근 단원</div></div>';
+      if (filtered.length > 0) {
+        html += '<div class="stat-card"><div class="stat-value">' + filtered[filtered.length - 1]['단원'] + '</div><div class="stat-label">최근 단원</div></div>';
+      }
       html += '</div>';
 
       // 테이블
@@ -307,8 +426,7 @@
       html += '<thead><tr><th>이름</th><th>학년</th><th>반</th><th>단원</th><th>점수</th><th>정답률</th><th>제출시간</th></tr></thead>';
       html += '<tbody>';
 
-      // 최신순 정렬
-      var sorted = data.slice().reverse();
+      var sorted = filtered.slice().reverse();
       for (var j = 0; j < sorted.length; j++) {
         var r = sorted[j];
         var time = r['제출시간'] ? new Date(r['제출시간']).toLocaleString('ko-KR') : '';
@@ -324,7 +442,19 @@
       }
 
       html += '</tbody></table></div>';
+
+      if (filtered.length === 0) {
+        html += '<div class="message message-info" style="margin-top:12px">선택한 조건에 맞는 결과가 없습니다.</div>';
+      }
+
       container.innerHTML = html;
+    },
+
+    applyFilters: function() {
+      if (!allResults) return;
+      var grade = document.getElementById('filterGrade').value;
+      var topic = document.getElementById('filterTopic').value;
+      this.renderResults(allResults, { grade: grade, topic: topic });
     }
   };
 

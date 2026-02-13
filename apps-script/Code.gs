@@ -10,7 +10,7 @@
  * 6. "배포" 클릭 → URL 복사 → config.js의 APPS_SCRIPT_URL에 입력
  *
  * 시트 구조 (자동 생성됨):
- * - "현재퀴즈": 현재 활성 퀴즈 데이터
+ * - "현재퀴즈": 학년별 활성 퀴즈 (Row 2=중1, Row 3=중2, Row 4=중3)
  * - "결과": 학생 제출 결과
  */
 
@@ -20,7 +20,14 @@ function doGet(e) {
   var action = e.parameter.action;
 
   if (action === 'getQuiz') {
-    return handleGetQuiz();
+    return handleGetQuiz(e.parameter.grade);
+  }
+
+  if (action === 'getDeployedStatus') {
+    if (e.parameter.password !== ADMIN_PASSWORD) {
+      return jsonResponse({ success: false, error: '비밀번호가 틀립니다.' });
+    }
+    return handleGetDeployedStatus();
   }
 
   if (action === 'getResults') {
@@ -57,12 +64,22 @@ function doPost(e) {
   return jsonResponse({ success: false, error: '알 수 없는 요청입니다.' });
 }
 
-function handleGetQuiz() {
+function handleGetQuiz(grade) {
+  if (!grade) {
+    return jsonResponse({ success: false, error: '학년 정보가 필요합니다.' });
+  }
+
+  var gradeNum = parseInt(grade);
+  if (gradeNum < 1 || gradeNum > 3) {
+    return jsonResponse({ success: false, error: '잘못된 학년입니다.' });
+  }
+
   var sheet = getOrCreateSheet('현재퀴즈');
-  var data = sheet.getRange('A2:F2').getValues()[0];
+  var row = gradeNum + 1;
+  var data = sheet.getRange('A' + row + ':F' + row).getValues()[0];
 
   if (!data[0]) {
-    return jsonResponse({ success: false, error: '현재 진행 중인 퀴즈가 없습니다.' });
+    return jsonResponse({ success: false, error: '해당 학년의 퀴즈가 아직 배포되지 않았습니다.' });
   }
 
   var problems;
@@ -91,7 +108,8 @@ function handleGetQuiz() {
       topic: data[2],
       createdAt: data[3],
       problemCount: data[4],
-      problems: safeProblems
+      problems: safeProblems,
+      fullProblems: problems
     }
   });
 }
@@ -100,14 +118,20 @@ function handleDeployQuiz(payload) {
   var sheet = getOrCreateSheet('현재퀴즈');
   var quizId = 'quiz-' + new Date().getTime();
 
+  var gradeNum = parseInt(payload.grade);
+  if (!gradeNum || gradeNum < 1 || gradeNum > 3) {
+    return jsonResponse({ success: false, error: '잘못된 학년입니다.' });
+  }
+
   // 헤더가 없으면 추가
   if (!sheet.getRange('A1').getValue()) {
     sheet.getRange('A1:F1').setValues([['quizId', 'grade', 'topic', 'createdAt', 'problemCount', 'quizJSON']]);
   }
 
-  sheet.getRange('A2:F2').setValues([[
+  var row = gradeNum + 1;
+  sheet.getRange('A' + row + ':F' + row).setValues([[
     quizId,
-    payload.grade,
+    gradeNum,
     payload.topic,
     new Date().toISOString(),
     payload.problems.length,
@@ -115,6 +139,35 @@ function handleDeployQuiz(payload) {
   ]]);
 
   return jsonResponse({ success: true, quizId: quizId });
+}
+
+function handleGetDeployedStatus() {
+  var sheet = getOrCreateSheet('현재퀴즈');
+  var data = sheet.getRange('A2:E4').getValues();
+  var statuses = [];
+
+  for (var i = 0; i < 3; i++) {
+    var row = data[i];
+    if (row[0]) {
+      statuses.push({
+        quizId: row[0],
+        grade: row[1],
+        topic: row[2],
+        createdAt: row[3],
+        problemCount: row[4]
+      });
+    } else {
+      statuses.push({
+        quizId: null,
+        grade: i + 1,
+        topic: null,
+        createdAt: null,
+        problemCount: 0
+      });
+    }
+  }
+
+  return jsonResponse({ success: true, data: statuses });
 }
 
 function handleSubmitResult(payload) {

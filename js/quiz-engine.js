@@ -27,8 +27,9 @@
       var testMode = sessionStorage.getItem('testMode');
       var quizJson = sessionStorage.getItem('quizData');
 
-      // 로컬 테스트 모드: localStorage에서 관리자가 배포한 퀴즈 확인
-      var localQuiz = localStorage.getItem('localQuiz');
+      // 로컬 테스트 모드: localStorage에서 관리자가 배포한 퀴즈 확인 (학년별 키 우선)
+      var localQuiz = localStorage.getItem('localQuiz_grade' + grade)
+        || localStorage.getItem('localQuiz');
 
       if (quizJson) {
         // 서버 또는 로컬에서 가져온 퀴즈 데이터

@@ -85,8 +85,9 @@
       // Apps Script URL이 설정되지 않은 경우 (로컬 테스트 모드)
       if (!MathQuiz.config.APPS_SCRIPT_URL) {
         sessionStorage.setItem('testMode', 'true');
-        // 로컬에 배포된 퀴즈가 있으면 그걸 사용
-        var localQuiz = localStorage.getItem('localQuiz');
+        // 로컬에 배포된 퀴즈가 있으면 그걸 사용 (학년별 키 우선)
+        var localQuiz = localStorage.getItem('localQuiz_grade' + grade)
+          || localStorage.getItem('localQuiz');
         if (localQuiz) {
           sessionStorage.setItem('quizData', localQuiz);
         }
@@ -98,7 +99,7 @@
       startBtn.disabled = true;
       loadingArea.classList.remove('hidden');
 
-      MathQuiz.api.loadQuiz()
+      MathQuiz.api.loadQuiz(grade)
         .then(function(res) {
           if (res.success) {
             sessionStorage.setItem('quizData', JSON.stringify(res.data));
