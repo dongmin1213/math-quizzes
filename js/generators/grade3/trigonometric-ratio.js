@@ -22,7 +22,7 @@
     var bx = 50, by = 180;
     var cx = 200, cy = 180;
 
-    var s = svgHelper.open(250, 210);
+    var s = svgHelper.open(270, 220);
     s += svgHelper.polygon([[ax, ay], [bx, by], [cx, cy]], { fill: '#f0f6ff' });
     s += svgHelper.rightAngle(bx, by, ax, ay, cx, cy, 14);
 
@@ -31,10 +31,23 @@
     if (labels.B) s += svgHelper.text(bx - 15, by + 16, labels.B);
     if (labels.C) s += svgHelper.text(cx + 10, cy + 16, labels.C);
 
-    // 변 레이블 (LaTeX → 유니코드 변환)
-    if (labels.AB) s += svgHelper.text(ax - 25, (ay + by) / 2, svgSafeLabel(labels.AB), { fontSize: 13 });
-    if (labels.BC) s += svgHelper.text((bx + cx) / 2, by + 20, svgSafeLabel(labels.BC), { fontSize: 13 });
-    if (labels.AC) s += svgHelper.text((ax + cx) / 2 + 12, (ay + cy) / 2 - 8, svgSafeLabel(labels.AC), { fontSize: 13 });
+    // 변 레이블 + 보조 호 (LaTeX → 유니코드 변환)
+    if (labels.AB) {
+      // AB(세로변): 왼쪽으로 휘는 호
+      s += '<path d="M ' + (ax - 6) + ' ' + (ay + 10) + ' Q ' + (ax - 22) + ' ' + ((ay + by) / 2) + ' ' + (bx - 6) + ' ' + (by - 10) + '" fill="none" stroke="#888" stroke-width="1.2"/>';
+      s += svgHelper.text(ax - 32, (ay + by) / 2 + 4, svgSafeLabel(labels.AB), { fontSize: 13 });
+    }
+    if (labels.BC) {
+      // BC(가로변): 아래로 휘는 호
+      s += '<path d="M ' + (bx + 16) + ' ' + (by + 6) + ' Q ' + ((bx + cx) / 2) + ' ' + (by + 20) + ' ' + (cx - 6) + ' ' + (cy + 6) + '" fill="none" stroke="#888" stroke-width="1.2"/>';
+      s += svgHelper.text((bx + cx) / 2, by + 30, svgSafeLabel(labels.BC), { fontSize: 13 });
+    }
+    if (labels.AC) {
+      // AC(빗변): 오른쪽으로 휘는 호
+      var mx = (ax + cx) / 2, my = (ay + cy) / 2;
+      s += '<path d="M ' + (ax + 10) + ' ' + (ay - 2) + ' Q ' + (mx + 18) + ' ' + (my - 16) + ' ' + (cx + 6) + ' ' + (cy - 8) + '" fill="none" stroke="#888" stroke-width="1.2"/>';
+      s += svgHelper.text(mx + 22, my - 12, svgSafeLabel(labels.AC), { fontSize: 13 });
+    }
 
     // 각도 표시 (빗변과 겹치지 않도록 AB쪽으로 배치)
     if (labels.angleA) {
