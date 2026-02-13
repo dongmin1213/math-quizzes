@@ -33,6 +33,38 @@
     };
   }
 
+  // 각도 방향 계산 (수학 좌표: 0°=오른쪽, 90°=위)
+  function mathAngle(x1, y1, x2, y2) {
+    return Math.atan2(-(y2 - y1), x2 - x1) * 180 / Math.PI;
+  }
+  function normAngle(a) { return ((a % 360) + 360) % 360; }
+
+  // 각도 호 + 라벨을 추가하는 헬퍼
+  function addAngleArc(vx, vy, toX1, toY1, toX2, toY2, label, color) {
+    color = color || '#4A90D9';
+    var d1 = normAngle(mathAngle(vx, vy, toX1, toY1));
+    var d2 = normAngle(mathAngle(vx, vy, toX2, toY2));
+    // 짧은 쪽으로 호를 그림
+    var diff = normAngle(d2 - d1);
+    var startDeg, endDeg;
+    if (diff <= 180) {
+      startDeg = d1; endDeg = d2;
+    } else {
+      startDeg = d2; endDeg = d1;
+    }
+    var arcR = 18;
+    var s = svgHelper.arc(vx, vy, arcR, startDeg, endDeg, { stroke: color, strokeWidth: 1.5 });
+    // 라벨 위치: 호의 중간 방향으로 바깥에
+    var span = normAngle(endDeg - startDeg);
+    var midDeg = normAngle(startDeg + span / 2);
+    var rad = midDeg * Math.PI / 180;
+    var labelR = arcR + 12;
+    var lx = vx + labelR * Math.cos(rad);
+    var ly = vy - labelR * Math.sin(rad);
+    s += svgHelper.text(lx, ly + 4, label, { fontSize: 11, fill: color });
+    return s;
+  }
+
   MathQuiz.generators['grade3-circle-properties'] = {
     meta: {
       grade: 3,
@@ -73,10 +105,9 @@
 
           s += svgHelper.line(circle.cx, circle.cy, p1.x, p1.y);
           s += svgHelper.line(circle.cx, circle.cy, p2.x, p2.y);
-          s += svgHelper.arc(circle.cx, circle.cy, 25, 0, centralAngle, { stroke: '#e74c3c', strokeWidth: 2 });
           s += svgHelper.text(p1.x + 12, p1.y + 4, 'A', { fontSize: 13 });
           s += svgHelper.text(p2.x + 8, p2.y - 8, 'B', { fontSize: 13 });
-          s += svgHelper.text(circle.cx + 18, circle.cy - 18, centralAngle + '°', { fontSize: 11, fill: '#e74c3c' });
+          s += addAngleArc(circle.cx, circle.cy, p1.x, p1.y, p2.x, p2.y, centralAngle + '°', '#e74c3c');
           s += svgHelper.close();
           svgDiagram = s;
 
@@ -119,7 +150,7 @@
           s += svgHelper.text(pB.x + 8, pB.y + 5, 'B', { fontSize: 13 });
           s += svgHelper.text(pP.x - 5, pP.y - 10, 'P', { fontSize: 13 });
           s += svgHelper.text(pQ.x - 15, pQ.y - 5, 'Q', { fontSize: 13 });
-          s += svgHelper.text(pP.x + 5, pP.y + 20, inscAngle + '°', { fontSize: 11, fill: '#4A90D9' });
+          s += addAngleArc(pP.x, pP.y, pA.x, pA.y, pB.x, pB.y, inscAngle + '°', '#4A90D9');
           s += svgHelper.close();
           svgDiagram = s;
 
@@ -195,7 +226,7 @@
           s += svgHelper.text(pA.x - 15, pA.y + 5, 'A', { fontSize: 13 });
           s += svgHelper.text(pB.x + 8, pB.y + 5, 'B', { fontSize: 13 });
           s += svgHelper.text(pP.x - 5, pP.y - 10, 'P', { fontSize: 13 });
-          s += svgHelper.text(pP.x + 8, pP.y + 18, inscAngle + '°', { fontSize: 11, fill: '#4A90D9' });
+          s += addAngleArc(pP.x, pP.y, pA.x, pA.y, pB.x, pB.y, inscAngle + '°', '#4A90D9');
           s += svgHelper.close();
           svgDiagram = s;
 
@@ -302,7 +333,7 @@
           s += svgHelper.text(pB.x + 8, pB.y - 8, 'B', { fontSize: 13 });
           s += svgHelper.text(pC.x + 8, pC.y + 16, 'C', { fontSize: 13 });
           s += svgHelper.text(pD.x - 15, pD.y + 16, 'D', { fontSize: 13 });
-          s += svgHelper.text(pA.x + 8, pA.y + 10, angleA + '°', { fontSize: 11, fill: '#e74c3c' });
+          s += addAngleArc(pA.x, pA.y, pB.x, pB.y, pD.x, pD.y, angleA + '°', '#e74c3c');
           s += svgHelper.close();
           svgDiagram = s;
 
