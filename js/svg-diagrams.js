@@ -103,20 +103,31 @@
       // 라벨 간격: 좁으면 2칸마다 표시
       var xStep = (w / (xMax - xMin)) < 20 ? 2 : 1;
       var yStep = (h / (yMax - yMin)) < 20 ? 2 : 1;
-      // 격자
+      // 1) 격자선 먼저 그리기
       for (var x = xMin; x <= xMax; x++) {
         var px = padding + (x - xMin) * scaleX;
         s += this.line(px, padding, px, height - padding, { stroke: '#e0e0e0', strokeWidth: 1 });
-        if (x !== 0 && x % xStep === 0) s += this.text(px, oy + 16, x, { fontSize: 11 });
       }
       for (var y = yMin; y <= yMax; y++) {
         var py = padding + (yMax - y) * scaleY;
         s += this.line(padding, py, width - padding, py, { stroke: '#e0e0e0', strokeWidth: 1 });
-        if (y !== 0 && y % yStep === 0) s += this.text(ox - 14, py + 4, y, { fontSize: 11 });
       }
-      // 축
+      // 2) 축
       s += this.line(padding, oy, width - padding, oy, { stroke: '#333', strokeWidth: 2 });
       s += this.line(ox, padding, ox, height - padding, { stroke: '#333', strokeWidth: 2 });
+      // 3) 라벨 (격자선·축 위에 표시)
+      for (var x = xMin; x <= xMax; x++) {
+        if (x !== 0 && x % xStep === 0) {
+          var px = padding + (x - xMin) * scaleX;
+          s += this.text(px, oy + 16, x, { fontSize: 11 });
+        }
+      }
+      for (var y = yMin; y <= yMax; y++) {
+        if (y !== 0 && y % yStep === 0) {
+          var py = padding + (yMax - y) * scaleY;
+          s += this.text(ox - 14, py + 4, y, { fontSize: 11 });
+        }
+      }
       s += this.text(width - padding + 14, oy + 4, 'x', { fontSize: 13 });
       s += this.text(ox + 2, padding - 8, 'y', { fontSize: 13 });
       s += this.text(ox - 10, oy + 16, 'O', { fontSize: 11 });
