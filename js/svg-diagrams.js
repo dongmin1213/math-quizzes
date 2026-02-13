@@ -100,16 +100,19 @@
       var oy = padding + yMax * scaleY;
 
       var s = '';
+      // 라벨 간격: 좁으면 2칸마다 표시
+      var xStep = (w / (xMax - xMin)) < 20 ? 2 : 1;
+      var yStep = (h / (yMax - yMin)) < 20 ? 2 : 1;
       // 격자
       for (var x = xMin; x <= xMax; x++) {
         var px = padding + (x - xMin) * scaleX;
         s += this.line(px, padding, px, height - padding, { stroke: '#e0e0e0', strokeWidth: 1 });
-        if (x !== 0) s += this.text(px, oy + 16, x, { fontSize: 11 });
+        if (x !== 0 && x % xStep === 0) s += this.text(px, oy + 16, x, { fontSize: 11 });
       }
       for (var y = yMin; y <= yMax; y++) {
         var py = padding + (yMax - y) * scaleY;
         s += this.line(padding, py, width - padding, py, { stroke: '#e0e0e0', strokeWidth: 1 });
-        if (y !== 0) s += this.text(ox - 14, py + 4, y, { fontSize: 11 });
+        if (y !== 0 && y % yStep === 0) s += this.text(ox - 14, py + 4, y, { fontSize: 11 });
       }
       // 축
       s += this.line(padding, oy, width - padding, oy, { stroke: '#333', strokeWidth: 2 });
