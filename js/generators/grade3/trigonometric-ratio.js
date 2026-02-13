@@ -66,9 +66,9 @@
       if (difficulty === 1) {
         subTypes = ['special-angle-value', 'identify-ratio', 'basic-triangle'];
       } else if (difficulty === 2) {
-        subTypes = ['find-side', 'find-angle-side', 'ratio-relation'];
+        subTypes = ['find-side', 'find-angle-side', 'ratio-relation', 'special-angle-value', 'basic-triangle'];
       } else {
-        subTypes = ['applied-height', 'combined-ratios', 'area-triangle'];
+        subTypes = ['applied-height', 'combined-ratios', 'area-triangle', 'find-side', 'find-angle-side'];
       }
       var subType = utils.randChoice(subTypes);
 
@@ -208,19 +208,19 @@
           var hyp, adj, opp;
           if (angle === 30) {
             // 30-60-90: opp=a, adj=a√3, hyp=2a
-            var a = utils.randChoice([2, 4, 6, 8]);
+            var a = utils.randChoice([2, 3, 4, 5, 6, 8, 10]);
             opp = a;
             adj = a + '\\sqrt{3}';
             hyp = 2 * a;
           } else if (angle === 45) {
             // 45-45-90: opp=adj=a, hyp=a√2
-            var a = utils.randChoice([2, 3, 4, 5]);
+            var a = utils.randChoice([2, 3, 4, 5, 6, 7]);
             opp = a;
             adj = a;
             hyp = a + '\\sqrt{2}';
           } else {
             // 60-30-90: opp=a√3, adj=a, hyp=2a
-            var a = utils.randChoice([2, 4, 6]);
+            var a = utils.randChoice([2, 3, 4, 5, 6, 8]);
             opp = a + '\\sqrt{3}';
             adj = a;
             hyp = 2 * a;
@@ -252,9 +252,16 @@
           }
 
           var labelsForSVG = { A: 'A', B: 'B', C: 'C', angleA: angle + '°' };
-          if (known === 'hypotenuse') labelsForSVG.AC = String(hyp);
-          else if (known === 'adjacent') labelsForSVG.AB = String(adj);
-          else labelsForSVG.BC = String(opp);
+          if (known === 'hypotenuse') {
+            labelsForSVG.AC = String(hyp);
+            labelsForSVG.BC = '?';
+          } else if (known === 'adjacent') {
+            labelsForSVG.AB = String(adj);
+            labelsForSVG.BC = '?';
+          } else {
+            labelsForSVG.BC = String(opp);
+            labelsForSVG.AC = '?';
+          }
           svgDiagram = makeRightTriangleSVG(labelsForSVG);
 
           questionLatex = null;
@@ -275,7 +282,7 @@
 
         case 'find-angle-side': {
           // 두 변이 주어지고 삼각비로 각도 추정
-          var triples = [[3, 4, 5], [5, 12, 13], [6, 8, 10]];
+          var triples = [[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17], [7, 24, 25], [9, 12, 15]];
           var triple = utils.randChoice(triples);
           var oppSide = triple[0];
           var adjSide = triple[1];
@@ -324,17 +331,61 @@
         }
 
         case 'ratio-relation': {
-          // sin²θ + cos²θ = 1 활용
           var angle = utils.randChoice([30, 45, 60]);
-          questionText = '$\\sin^2 ' + angle + '^\\circ + \\cos^2 ' + angle + '^\\circ$ 의 값을 구하시오.';
-          questionLatex = '\\sin^2 ' + angle + '^\\circ + \\cos^2 ' + angle + '^\\circ';
-          answer = '$1$';
-          explanation = '삼각비의 기본 성질에 의해 $\\sin^2\\theta + \\cos^2\\theta = 1$ 이므로 $\\sin^2 ' + angle + '^\\circ + \\cos^2 ' + angle + '^\\circ = 1$ 입니다.';
-
-          if (type === 'multiple-choice') {
-            choices = ['$1$', '$0$', '$2$', '$\\frac{1}{2}$'];
-            choices = utils.shuffle(choices);
-            answerIndex = choices.indexOf(answer);
+          var variant = utils.randInt(1, 4);
+          if (variant === 1) {
+            // sin²θ + cos²θ = 1
+            questionText = '$\\sin^2 ' + angle + '^\\circ + \\cos^2 ' + angle + '^\\circ$ 의 값을 구하시오.';
+            questionLatex = '\\sin^2 ' + angle + '^\\circ + \\cos^2 ' + angle + '^\\circ';
+            answer = '$1$';
+            explanation = '삼각비의 기본 성질에 의해 $\\sin^2\\theta + \\cos^2\\theta = 1$ 이므로 $\\sin^2 ' + angle + '^\\circ + \\cos^2 ' + angle + '^\\circ = 1$ 입니다.';
+            if (type === 'multiple-choice') {
+              choices = ['$1$', '$0$', '$\\frac{1}{2}$', '$2$'];
+              choices = utils.shuffle(choices);
+              answerIndex = choices.indexOf(answer);
+            }
+          } else if (variant === 2) {
+            // sinθ × cosθ 계산
+            var data = SPECIAL[angle];
+            var products = { 30: '\\frac{\\sqrt{3}}{4}', 45: '\\frac{1}{2}', 60: '\\frac{\\sqrt{3}}{4}' };
+            questionText = '$\\sin ' + angle + '^\\circ \\times \\cos ' + angle + '^\\circ$ 의 값을 구하시오.';
+            questionLatex = '\\sin ' + angle + '^\\circ \\times \\cos ' + angle + '^\\circ';
+            answer = '$' + products[angle] + '$';
+            explanation = '$\\sin ' + angle + '^\\circ \\times \\cos ' + angle + '^\\circ = ' + data.sin + ' \\times ' + data.cos + ' = ' + products[angle] + '$ 입니다.';
+            if (type === 'multiple-choice') {
+              choices = ['$' + products[angle] + '$', '$\\frac{1}{2}$', '$\\frac{\\sqrt{3}}{2}$', '$\\frac{1}{4}$'];
+              var seen = {};
+              choices = choices.filter(function(c) { if (seen[c]) return false; seen[c] = true; return true; });
+              while (choices.length < 4) choices.push('$\\frac{3}{4}$');
+              choices = utils.shuffle(choices);
+              answerIndex = choices.indexOf(answer);
+            }
+          } else if (variant === 3) {
+            // sin30°cos60° + cos30°sin60° = sin90° = 1
+            questionText = '$\\sin 30^\\circ \\cos 60^\\circ + \\cos 30^\\circ \\sin 60^\\circ$ 의 값을 구하시오.';
+            questionLatex = '\\sin 30^\\circ \\cos 60^\\circ + \\cos 30^\\circ \\sin 60^\\circ';
+            answer = '$1$';
+            explanation = '$\\sin 30^\\circ \\cos 60^\\circ + \\cos 30^\\circ \\sin 60^\\circ = \\frac{1}{2} \\times \\frac{1}{2} + \\frac{\\sqrt{3}}{2} \\times \\frac{\\sqrt{3}}{2} = \\frac{1}{4} + \\frac{3}{4} = 1$ 입니다.';
+            if (type === 'multiple-choice') {
+              choices = ['$1$', '$\\frac{1}{2}$', '$\\frac{\\sqrt{3}}{2}$', '$0$'];
+              choices = utils.shuffle(choices);
+              answerIndex = choices.indexOf(answer);
+            }
+          } else {
+            // tan²θ 값 계산
+            var tanSq = { 30: '\\frac{1}{3}', 45: '1', 60: '3' };
+            questionText = '$\\tan^2 ' + angle + '^\\circ$ 의 값을 구하시오.';
+            questionLatex = '\\tan^2 ' + angle + '^\\circ';
+            answer = '$' + tanSq[angle] + '$';
+            explanation = '$\\tan^2 ' + angle + '^\\circ = (' + SPECIAL[angle].tan + ')^2 = ' + tanSq[angle] + '$ 입니다.';
+            if (type === 'multiple-choice') {
+              choices = ['$' + tanSq[angle] + '$', '$\\frac{1}{3}$', '$1$', '$3$'];
+              var seen2 = {};
+              choices = choices.filter(function(c) { if (seen2[c]) return false; seen2[c] = true; return true; });
+              while (choices.length < 4) choices.push('$\\frac{\\sqrt{3}}{3}$');
+              choices = utils.shuffle(choices);
+              answerIndex = choices.indexOf(answer);
+            }
           }
           break;
         }

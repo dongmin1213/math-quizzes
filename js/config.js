@@ -20,7 +20,7 @@ MathQuiz.config = {
   ADMIN_PASSWORD: 'math1234',
 
   // 버전 (커밋 시 자동 갱신)
-  VERSION: 'v2025.02.14-5b4dcf4',
+  VERSION: 'v2025.02.14-aaec58d',
 
   // ── 아래는 수정하지 않아도 됩니다 ──
   DEFAULT_PROBLEM_COUNT: 10,

@@ -122,7 +122,7 @@
       svgStr += svgHelper.line(200, 170, 280, 170, { stroke: '#E74C3C', strokeWidth: 1.5, dash: '4,3' });
       // 외각 호 (BC연장선과 AC 사이 각도 표시)
       svgStr += svgHelper.arc(200, 170, 25, 0, 112, { stroke: '#E74C3C', strokeWidth: 1.5 });
-      svgStr += svgHelper.text(258, 158, 'x\u00B0', { fontSize: 13, fill: '#E74C3C' });
+      svgStr += svgHelper.text(230, 150, 'x\u00B0', { fontSize: 13, fill: '#E74C3C' });
       svgStr += svgHelper.close();
 
       var distractors = utils.generateDistractors(exterior, 3, function() {
