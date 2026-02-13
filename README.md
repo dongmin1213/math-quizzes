@@ -58,30 +58,80 @@ python3 -m http.server 8080
 4. 리포지토리 **Settings** → **Pages** → Source를 **Deploy from a branch** / **main** 선택
 5. 몇 분 후 `https://내아이디.github.io/math-quiz/` 에서 접속 가능
 
-### 4단계: Google Sheets 연동하기 (선택사항)
+### 4단계: Google Sheets 연동하기 (학생 결과 자동 저장)
 
-> Google Sheets를 연동하면 학생 결과가 자동 저장됩니다.
-> 연동하지 않아도 퀴즈 생성/풀기는 정상 동작합니다.
+> 연동하면 학생이 퀴즈를 풀 때마다 이름, 점수, 오답이 스프레드시트에 자동 기록됩니다.
+> 연동하지 않아도 퀴즈 생성/풀기는 정상 동작합니다 (결과 저장만 안 됨).
 
-1. Google Drive에서 **새 스프레드시트** 생성 (이름: "수학퀴즈 결과")
-2. 상단 메뉴: **확장 프로그램** → **Apps Script** 클릭
-3. 기본 코드를 모두 지우고, 이 프로젝트의 `apps-script/Code.gs` 내용을 **전체 복사**하여 붙여넣기
-4. **배포** → **새 배포** 클릭
-5. 유형: **웹 앱** 선택
-6. **실행 주체**: "나" / **액세스 권한**: "누구나" 선택
-7. **배포** 클릭 → URL 복사 (예: `https://script.google.com/macros/s/xxxxx/exec`)
-8. 프로젝트의 `js/config.js` 파일을 열고:
+#### 4-1. Google Apps Script 만들기
+
+1. [Google Drive](https://drive.google.com) 접속
+2. **새로 만들기** → **Google 스프레드시트** 클릭
+3. 시트 이름을 "수학퀴즈 결과" 등 원하는 이름으로 변경
+4. 상단 메뉴에서 **확장 프로그램** → **Apps Script** 클릭
+5. 왼쪽에 `코드.gs` 파일이 보임 → 안에 있는 기본 코드를 **전부 지우기**
+6. 이 프로젝트의 `apps-script/Code.gs` 파일을 열고 **내용 전체를 복사**
+7. Apps Script 편집기에 **붙여넣기**
+8. 상단의 💾 저장 버튼 클릭 (또는 Ctrl+S / Cmd+S)
+
+#### 4-2. 웹 앱으로 배포하기
+
+1. Apps Script 편집기 상단에서 **배포** → **새 배포** 클릭
+2. 왼쪽 톱니바퀴 아이콘 클릭 → **웹 앱** 선택
+3. 설정:
+   - **설명**: 아무거나 (예: "수학퀴즈")
+   - **실행 주체**: "나"
+   - **액세스 권한**: **"누구나"** ← 이거 중요!
+4. **배포** 버튼 클릭
+5. "액세스 승인" 팝업이 뜨면 → 본인 Google 계정 선택 → 허용
+6. **URL이 나타남** → 이 URL을 복사해두세요
+
+URL 예시: `https://script.google.com/macros/s/AKfycbx어쩌구저쩌구.../exec`
+
+#### 4-3. config.js에 URL 붙여넣기
+
+`js/config.js` 파일을 열면 상단에 이런 안내가 있습니다:
+
 ```js
-APPS_SCRIPT_URL: '여기에 복사한 URL 붙여넣기',
+// ★ [수정 1] 아래 따옴표 안에 Google Apps Script URL을 붙여넣으세요
+APPS_SCRIPT_URL: '',
 ```
-9. 저장 후 GitHub에 다시 업로드
 
-### 비밀번호 변경
+따옴표 안에 복사한 URL을 붙여넣으세요:
 
-`js/config.js` 파일에서:
 ```js
-ADMIN_PASSWORD: 'math1234',  // ← 원하는 비밀번호로 변경
+APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbx어쩌구.../exec',
 ```
+
+⚠️ **주의**: 따옴표(`'`)를 지우면 안 됩니다. 따옴표 안에만 넣으세요.
+
+#### 4-4. GitHub에 반영하기
+
+수정한 config.js를 GitHub에 올려야 실제 사이트에 반영됩니다.
+
+**방법 A** - GitHub 웹에서 직접 수정 (가장 쉬움):
+1. GitHub 리포지토리 페이지 접속
+2. `js` 폴더 → `config.js` 클릭
+3. 연필 아이콘 (✏️ Edit) 클릭
+4. `APPS_SCRIPT_URL: ''` 부분을 찾아서 URL 붙여넣기
+5. 하단 **Commit changes** 클릭
+
+**방법 B** - Claude에게 시키기:
+```
+config.js의 APPS_SCRIPT_URL을 이 URL로 바꿔줘: https://script.google.com/macros/s/xxxxx/exec
+그리고 깃허브에 푸시해줘.
+```
+
+### 비밀번호 변경하기
+
+`js/config.js` 파일 상단에서:
+
+```js
+// ★ [수정 2] 관리자 비밀번호를 원하는 것으로 바꾸세요
+ADMIN_PASSWORD: 'math1234',
+```
+
+`math1234` 부분을 원하는 비밀번호로 바꾸세요. 수정 후 GitHub에 반영하면 됩니다.
 
 ---
 
