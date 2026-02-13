@@ -303,7 +303,7 @@
       var correctAnswer = '(' + sx + ', ' + sy + ')';
 
       var gridRange = Math.max(Math.abs(x), Math.abs(y), Math.abs(sx), Math.abs(sy)) + 1;
-      var svgStr = drawTwoPointsOnGrid(x, y, sx, sy, 'A', "A'", gridRange);
+      var svgStr = drawPointOnGrid(x, y, 'A', gridRange);
 
       if (type === 'multiple-choice') {
         var choices = [correctAnswer];

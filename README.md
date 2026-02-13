@@ -2,6 +2,8 @@
 
 학생들이 iPad에서 수학 문제를 풀고, 결과가 자동으로 선생님 Google Sheets에 저장되는 무료 웹앱입니다.
 
+**라이브 데모**: https://dongmin1213.github.io/math-quizzes/
+
 ## 주요 기능
 
 - 중1/중2/중3 전 학년 **18개 단원** 문제 자동 생성
@@ -53,10 +55,10 @@ python3 -m http.server 8080
 ### 3단계: GitHub Pages로 인터넷에 공개하기
 
 1. GitHub 계정 생성 (https://github.com)
-2. 새 리포지토리 생성 (예: `math-quiz`)
+2. 새 리포지토리 생성 (예: `math-quizzes`)
 3. 파일을 업로드하거나 git push
 4. 리포지토리 **Settings** → **Pages** → Source를 **Deploy from a branch** / **main** 선택
-5. 몇 분 후 `https://내아이디.github.io/math-quiz/` 에서 접속 가능
+5. 몇 분 후 `https://내아이디.github.io/math-quizzes/` 에서 접속 가능
 
 ### 4단계: Google Sheets 연동하기 (학생 결과 자동 저장)
 
@@ -191,6 +193,13 @@ claude
 2. **구체적인 요구사항**을 적으면 더 정확한 결과를 얻습니다
 3. 작업 후 **"로컬에서 테스트해줘"** 라고 하면 문제를 미리 발견할 수 있습니다
 4. `CLAUDE.md`가 있으면 AI가 알아서 코딩 규칙을 지킵니다
+
+---
+
+## AI와 함께 개발 이어가기
+
+이 프로젝트는 AI 도구로 계속 확장할 수 있도록 설계되었습니다.
+자세한 프롬프트 작성법과 실전 예시는 **[프롬프트가이드.md](프롬프트가이드.md)** 를 참고하세요.
 
 ---
 

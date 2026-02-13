@@ -14,7 +14,7 @@
 ## 파일 구조
 
 ```
-math-quiz/
+math-quizzes/
 ├── index.html          # 학생 입장 페이지 (이름/학년/반 입력)
 ├── quiz.html           # 퀴즈 풀기 페이지
 ├── result.html         # 결과 확인 페이지
@@ -314,7 +314,7 @@ CORS 우회: `Content-Type: text/plain`으로 POST 요청
 ### 로컬 테스트 (Apps Script 없이)
 
 ```bash
-cd math-quiz
+cd math-quizzes
 python3 -m http.server 8080
 # → http://localhost:8080/admin.html (비밀번호: math1234)
 # → http://localhost:8080/
@@ -327,6 +327,11 @@ python3 -m http.server 8080
 ```bash
 node -c js/generators/grade1/basic-geometry.js
 ```
+
+### 전체 생성기 일괄 테스트
+
+Node.js로 모든 생성기를 자동 테스트하는 스크립트를 만들어 돌릴 수 있습니다.
+각 생성기별 난이도(1~3) × 유형(MC/SA) 조합으로 5문제씩 생성해서 에러 없는지 확인하세요.
 
 ## 주의사항
 
