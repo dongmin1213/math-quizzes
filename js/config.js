@@ -14,7 +14,7 @@ window.MathQuiz = window.MathQuiz || {};
 MathQuiz.config = {
   // ★ [수정 1] 아래 따옴표 안에 Google Apps Script URL을 붙여넣으세요
   // 예시: 'https://script.google.com/macros/s/AKfycbx.../exec'
-  APPS_SCRIPT_URL: '',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbx6lpJqymbwuisPF5LolanbVWngKgOx-yzX4taEwz8kUWTtXJgic3-72oCnHrxc_xYr/exec',
 
   // ★ [수정 2] 관리자 비밀번호를 원하는 것으로 바꾸세요
   ADMIN_PASSWORD: 'math1234',
