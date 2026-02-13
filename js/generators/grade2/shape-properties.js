@@ -116,11 +116,13 @@
       var explanation = '삼각형의 한 외각의 크기는 이웃하지 않는 두 내각의 합과 같으므로\n';
       explanation += '$' + a + '^{\\circ} + ' + b + '^{\\circ} = ' + exterior + '^{\\circ}$';
 
-      var svgStr = svgHelper.open(280, 200);
+      var svgStr = svgHelper.open(300, 200);
       svgStr += svgHelper.triangle(140, 20, 40, 170, 200, 170, { A: '', B: a + '\u00B0', C: b + '\u00B0' });
       // 외각 표시용 연장선
-      svgStr += svgHelper.line(200, 170, 260, 170, { stroke: '#E74C3C', strokeWidth: 1.5, dash: '4,3' });
-      svgStr += svgHelper.text(235, 158, 'x\u00B0', { fontSize: 13, fill: '#E74C3C' });
+      svgStr += svgHelper.line(200, 170, 280, 170, { stroke: '#E74C3C', strokeWidth: 1.5, dash: '4,3' });
+      // 외각 호 (BC연장선과 AC 사이 각도 표시)
+      svgStr += svgHelper.arc(200, 170, 25, 0, 112, { stroke: '#E74C3C', strokeWidth: 1.5 });
+      svgStr += svgHelper.text(258, 158, 'x\u00B0', { fontSize: 13, fill: '#E74C3C' });
       svgStr += svgHelper.close();
 
       var distractors = utils.generateDistractors(exterior, 3, function() {
@@ -217,14 +219,14 @@
       var explanation = '평행사변형에서 대변의 길이는 같으므로\n';
       explanation += '$\\overline{CD} = \\overline{AB} = ' + side1 + '$ cm';
 
-      var svgStr = svgHelper.open(280, 180);
+      var svgStr = svgHelper.open(300, 180);
       svgStr += svgHelper.polygon([[50, 40], [230, 40], [260, 150], [80, 150]]);
       svgStr += svgHelper.text(40, 35, 'A', { fontSize: 14 });
       svgStr += svgHelper.text(238, 35, 'B', { fontSize: 14 });
       svgStr += svgHelper.text(268, 158, 'C', { fontSize: 14 });
       svgStr += svgHelper.text(68, 165, 'D', { fontSize: 14 });
       svgStr += svgHelper.text(140, 30, side1 + 'cm', { fontSize: 12 });
-      svgStr += svgHelper.text(252, 95, side2 + 'cm', { fontSize: 12 });
+      svgStr += svgHelper.text(272, 95, side2 + 'cm', { fontSize: 12, anchor: 'start' });
       svgStr += svgHelper.close();
 
       var distractors = utils.generateDistractors(side1, 3, function() {
