@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>수학 퀴즈 - 관리자</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 로그인 -->
+    <div id="loginSection">
+      <div class="password-gate">
+        <h2 style="margin-bottom:8px">관리자 페이지</h2>
+        <p style="color:var(--text-light);margin-bottom:24px">비밀번호를 입력하세요</p>
+        <div class="form-group">
+          <input type="password" id="adminPassword" placeholder="비밀번호"
+            onkeydown="if(event.key==='Enter')MathQuiz.admin.login()">
+        </div>
+        <div id="loginError" class="message message-error hidden" style="margin-bottom:12px"></div>
+        <button class="btn btn-primary" onclick="MathQuiz.admin.login()">로그인</button>
+      </div>
+    </div>
+
+    <!-- 메인 -->
+    <div id="mainSection" class="hidden">
+      <div class="page-header">
+        <h1>퀴즈 관리</h1>
+        <p>문제 생성 및 학생 결과 확인</p>
+      </div>
+
+      <!-- 탭 -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="generate">퀴즈 생성</button>
+        <button class="admin-tab" data-tab="results">결과 보기</button>
+      </div>
+
+      <!-- 퀴즈 생성 탭 -->
+      <div id="tab-generate" class="tab-content active">
+        <div class="card">
+          <div class="form-group">
+            <label for="genGrade">학년</label>
+            <select id="genGrade">
+              <option value="">학년을 선택하세요</option>
+              <option value="1">중학교 1학년</option>
+              <option value="2">중학교 2학년</option>
+              <option value="3">중학교 3학년</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="genTopic">단원</label>
+            <select id="genTopic">
+              <option value="">먼저 학년을 선택하세요</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="genCount">문제 수</label>
+            <select id="genCount">
+              <option value="5">5문제</option>
+              <option value="10" selected>10문제</option>
+              <option value="15">15문제</option>
+              <option value="20">20문제</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="genDifficulty">난이도</label>
+            <select id="genDifficulty">
+              <option value="1">하 (기본)</option>
+              <option value="2" selected>중 (보통)</option>
+              <option value="3">상 (심화)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="genMcRatio">객관식 비율</label>
+            <select id="genMcRatio">
+              <option value="100">100% (전부 객관식)</option>
+              <option value="70" selected>70% (객관식 위주)</option>
+              <option value="50">50% (반반)</option>
+              <option value="30">30% (주관식 위주)</option>
+              <option value="0">0% (전부 주관식)</option>
+            </select>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="MathQuiz.admin.generate()">
+              문제 생성하기
+            </button>
+          </div>
+
+          <div id="genStatus" style="margin-top:16px"></div>
+        </div>
+
+        <!-- 미리보기 -->
+        <div id="previewArea"></div>
+
+        <!-- 배포 -->
+        <div id="deploySection" class="hidden" style="margin-top:16px">
+          <div class="card">
+            <h3 style="margin-bottom:12px">퀴즈 배포</h3>
+            <p style="color:var(--text-light);font-size:14px;margin-bottom:16px">
+              아래 버튼을 누르면 학생들이 바로 이 문제를 풀 수 있습니다.
+            </p>
+            <button id="deployBtn" class="btn btn-success" onclick="MathQuiz.admin.deploy()">
+              배포하기
+            </button>
+            <div id="deployStatus" style="margin-top:12px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 결과 보기 탭 -->
+      <div id="tab-results" class="tab-content">
+        <div id="resultsContainer">
+          <div class="message message-info">결과를 불러오려면 이 탭을 선택하세요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KaTeX -->
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+
+  <!-- Core -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/katex-helpers.js"></script>
+  <script src="js/svg-diagrams.js"></script>
+
+  <!-- Generator Base -->
+  <script src="js/generators/generator-base.js"></script>
+
+  <!-- Grade 1 Generators -->
+  <script src="js/generators/grade1/prime-factorization.js"></script>
+  <script src="js/generators/grade1/integer-rational.js"></script>
+  <script src="js/generators/grade1/linear-equation.js"></script>
+  <script src="js/generators/grade1/coordinates-graph.js"></script>
+  <script src="js/generators/grade1/basic-geometry.js"></script>
+
+  <!-- Grade 2 Generators -->
+  <script src="js/generators/grade2/expression-calc.js"></script>
+  <script src="js/generators/grade2/simultaneous-eq.js"></script>
+  <script src="js/generators/grade2/inequality.js"></script>
+  <script src="js/generators/grade2/linear-function.js"></script>
+  <script src="js/generators/grade2/shape-properties.js"></script>
+  <script src="js/generators/grade2/probability.js"></script>
+
+  <!-- Grade 3 Generators -->
+  <script src="js/generators/grade3/square-root-real.js"></script>
+  <script src="js/generators/grade3/factoring.js"></script>
+  <script src="js/generators/grade3/quadratic-equation.js"></script>
+  <script src="js/generators/grade3/quadratic-function.js"></script>
+  <script src="js/generators/grade3/trigonometric-ratio.js"></script>
+  <script src="js/generators/grade3/circle-properties.js"></script>
+  <script src="js/generators/grade3/statistics.js"></script>
+
+  <!-- Admin Engine -->
+  <script src="js/admin-engine.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      MathQuiz.admin.init();
+    });
+  </script>
+</body>
+</html>

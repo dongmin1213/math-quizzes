@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>수학 퀴즈 - 결과</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div id="resultArea">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p style="margin-top:12px">결과를 불러오는 중...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/katex-helpers.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var resultJson = sessionStorage.getItem('quizResult');
+      if (!resultJson) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      var result = JSON.parse(resultJson);
+      renderResult(result);
+    });
+
+    function renderResult(result) {
+      var area = document.getElementById('resultArea');
+      var pct = result.percentage;
+      var scoreClass = pct >= 80 ? 'score-excellent' : pct >= 50 ? 'score-good' : 'score-poor';
+
+      var html = '';
+
+      // 학생 정보
+      html += '<div class="page-header">';
+      html += '<h1>퀴즈 결과</h1>';
+      html += '<p>' + (result.studentInfo ? result.studentInfo.name : '') + '</p>';
+      html += '</div>';
+
+      // 점수
+      html += '<div class="card result-score">';
+      html += '<div class="score-big ' + scoreClass + '">' + result.score +
+        '<span class="score-total"> / ' + result.total + '</span></div>';
+      html += '<div class="score-percent ' + scoreClass + '">' + pct + '%</div>';
+      html += '<div class="result-bar">';
+      html += '<div class="correct" style="width:' + pct + '%"></div>';
+      html += '<div class="wrong" style="width:' + (100 - pct) + '%"></div>';
+      html += '</div>';
+
+      var msg = pct >= 90 ? '훌륭합니다!' :
+                pct >= 70 ? '잘했어요!' :
+                pct >= 50 ? '조금 더 노력하면 좋겠어요!' : '다시 한번 복습해보세요!';
+      html += '<p style="color:var(--text-light)">' + msg + '</p>';
+      html += '</div>';
+
+      // 문제별 리뷰
+      if (result.details && result.details.length > 0) {
+        html += '<h3 style="margin:24px 0 12px;font-size:17px">문제별 결과</h3>';
+
+        for (var i = 0; i < result.details.length; i++) {
+          var d = result.details[i];
+          var p = d.problem;
+          var cls = d.isCorrect ? 'correct' : 'wrong';
+          var icon = d.isCorrect ? 'O' : 'X';
+          var iconColor = d.isCorrect ? 'var(--success)' : 'var(--error)';
+
+          html += '<div class="review-item ' + cls + '">';
+          html += '<div class="review-header">';
+          html += '<span class="icon" style="color:' + iconColor + ';font-weight:800">' + icon + '</span>';
+          html += '<span>문제 ' + (i + 1) + '</span>';
+          html += '</div>';
+
+          // 문제 텍스트
+          html += '<div data-math-text="' + escapeAttr(p.questionText) + '" style="margin-bottom:6px"></div>';
+          if (p.questionLatex) {
+            html += '<div data-latex="' + escapeAttr(p.questionLatex) + '" data-display style="margin-bottom:10px"></div>';
+          }
+
+          // 학생 답안
+          var userAnswerText = '';
+          if (p.type === 'multiple-choice' && p.choices) {
+            var labels = ['\u2460', '\u2461', '\u2462', '\u2463'];
+            userAnswerText = d.userAnswer !== null ? labels[d.userAnswer] + ' ' + p.choices[d.userAnswer] : '미응답';
+          } else {
+            userAnswerText = d.userAnswer || '미응답';
+          }
+
+          html += '<div class="review-answer">';
+          html += '내 답: <strong data-math-text="' + escapeAttr(userAnswerText) + '"></strong>';
+          if (!d.isCorrect) {
+            var correctText = p.type === 'multiple-choice' && p.choices ?
+              p.choices[p.answerIndex] : p.answer;
+            html += '<br>정답: <strong data-math-text="' + escapeAttr(String(correctText)) + '" style="color:var(--success)"></strong>';
+          }
+          html += '</div>';
+
+          // 해설 (오답만)
+          if (!d.isCorrect && p.explanation) {
+            html += '<div class="review-explanation" data-math-text="' +
+              escapeAttr(p.explanation) + '"></div>';
+          }
+
+          html += '</div>';
+        }
+      }
+
+      // 돌아가기 버튼
+      html += '<div style="margin-top:24px">';
+      html += '<a href="index.html" class="btn btn-primary" onclick="clearSession()">처음으로 돌아가기</a>';
+      html += '</div>';
+
+      area.innerHTML = html;
+
+      // KaTeX 렌더링
+      if (typeof MathQuiz !== 'undefined' && MathQuiz.renderMath) {
+        MathQuiz.renderMath(area);
+      }
+    }
+
+    function clearSession() {
+      sessionStorage.removeItem('quizData');
+      sessionStorage.removeItem('quizAnswers');
+      sessionStorage.removeItem('quizResult');
+    }
+
+    function escapeAttr(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+  </script>
+</body>
+</html>

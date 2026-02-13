@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>수학 퀴즈 - 문제 풀기</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 진행 바 -->
+  <div class="progress-bar">
+    <div class="progress-info">
+      <span class="current" id="progressCurrent">1 / 10</span>
+    </div>
+    <div class="problem-dots" id="problemDots"></div>
+  </div>
+
+  <div class="container">
+    <!-- 문제 영역 -->
+    <div id="problemArea"></div>
+
+    <!-- 네비게이션 -->
+    <div class="quiz-nav">
+      <button class="btn btn-outline" id="prevBtn" onclick="MathQuiz.quizEngine.prevProblem()">
+        이전
+      </button>
+      <button class="btn btn-primary" id="nextBtn" onclick="MathQuiz.quizEngine.nextProblem()">
+        다음
+      </button>
+      <button class="btn btn-success" id="submitBtn" onclick="MathQuiz.quizEngine.confirmSubmit()" style="display:none">
+        제출하기
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/katex-helpers.js"></script>
+  <script src="js/svg-diagrams.js"></script>
+  <script src="js/quiz-engine.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      MathQuiz.quizEngine.init();
+    });
+  </script>
+</body>
+</html>
