@@ -170,14 +170,17 @@
       explanation += '$\\angle B = 180^{\\circ} - ' + angle1 + '^{\\circ} = ' + angle2 + '^{\\circ}$';
 
       // SVG 평행사변형
-      var svgStr = svgHelper.open(280, 180);
+      var svgStr = svgHelper.open(300, 180);
       svgStr += svgHelper.polygon([[50, 40], [230, 40], [260, 150], [80, 150]]);
       svgStr += svgHelper.text(40, 35, 'A', { fontSize: 14 });
       svgStr += svgHelper.text(238, 35, 'B', { fontSize: 14 });
       svgStr += svgHelper.text(268, 158, 'C', { fontSize: 14 });
       svgStr += svgHelper.text(68, 165, 'D', { fontSize: 14 });
-      svgStr += svgHelper.text(80, 55, angle1 + '\u00B0', { fontSize: 12, anchor: 'start' });
-      svgStr += svgHelper.text(215, 55, 'x\u00B0', { fontSize: 12 });
+      // 각도 호 표시
+      svgStr += svgHelper.arc(50, 40, 18, 285, 360, { stroke: '#e74c3c', strokeWidth: 1.5 });
+      svgStr += svgHelper.arc(230, 40, 18, 180, 285, { stroke: '#e74c3c', strokeWidth: 1.5 });
+      svgStr += svgHelper.text(78, 60, angle1 + '\u00B0', { fontSize: 12, anchor: 'start' });
+      svgStr += svgHelper.text(208, 60, 'x\u00B0', { fontSize: 12 });
       svgStr += svgHelper.close();
 
       var distractors = utils.generateDistractors(angle2, 3, function() {
@@ -219,14 +222,18 @@
       var explanation = '평행사변형에서 대변의 길이는 같으므로\n';
       explanation += '$\\overline{CD} = \\overline{AB} = ' + side1 + '$ cm';
 
-      var svgStr = svgHelper.open(300, 180);
+      var svgStr = svgHelper.open(320, 180);
       svgStr += svgHelper.polygon([[50, 40], [230, 40], [260, 150], [80, 150]]);
       svgStr += svgHelper.text(40, 35, 'A', { fontSize: 14 });
       svgStr += svgHelper.text(238, 35, 'B', { fontSize: 14 });
       svgStr += svgHelper.text(268, 158, 'C', { fontSize: 14 });
       svgStr += svgHelper.text(68, 165, 'D', { fontSize: 14 });
-      svgStr += svgHelper.text(140, 30, side1 + 'cm', { fontSize: 12 });
-      svgStr += svgHelper.text(272, 95, side2 + 'cm', { fontSize: 12, anchor: 'start' });
+      // AB 길이 표시 (상단 호)
+      svgStr += '<path d="M 60 34 Q 140 10 220 34" fill="none" stroke="#888" stroke-width="1.2"/>';
+      svgStr += svgHelper.text(140, 18, side1 + 'cm', { fontSize: 12 });
+      // BC 길이 표시 (우측 호)
+      svgStr += '<path d="M 236 46 Q 288 95 264 144" fill="none" stroke="#888" stroke-width="1.2"/>';
+      svgStr += svgHelper.text(285, 100, side2 + 'cm', { fontSize: 12, anchor: 'start' });
       svgStr += svgHelper.close();
 
       var distractors = utils.generateDistractors(side1, 3, function() {

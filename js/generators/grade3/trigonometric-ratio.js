@@ -3,6 +3,11 @@
   var utils = MathQuiz.utils;
   var svgHelper = MathQuiz.svg;
 
+  // LaTeX 수식을 SVG 텍스트용 유니코드로 변환
+  function svgSafeLabel(s) {
+    return String(s).replace(/\\sqrt\{(\d+)\}/g, '\u221A$1');
+  }
+
   // 특수각 삼각비 테이블
   var SPECIAL = {
     30: { sin: '\\frac{1}{2}', cos: '\\frac{\\sqrt{3}}{2}', tan: '\\frac{\\sqrt{3}}{3}', sinVal: 0.5, cosVal: 0.866, tanVal: 0.577 },
@@ -26,15 +31,15 @@
     if (labels.B) s += svgHelper.text(bx - 15, by + 16, labels.B);
     if (labels.C) s += svgHelper.text(cx + 10, cy + 16, labels.C);
 
-    // 변 레이블
-    if (labels.AB) s += svgHelper.text(ax - 25, (ay + by) / 2, labels.AB, { fontSize: 13 });
-    if (labels.BC) s += svgHelper.text((bx + cx) / 2, by + 20, labels.BC, { fontSize: 13 });
-    if (labels.AC) s += svgHelper.text((ax + cx) / 2 + 12, (ay + cy) / 2 - 8, labels.AC, { fontSize: 13 });
+    // 변 레이블 (LaTeX → 유니코드 변환)
+    if (labels.AB) s += svgHelper.text(ax - 25, (ay + by) / 2, svgSafeLabel(labels.AB), { fontSize: 13 });
+    if (labels.BC) s += svgHelper.text((bx + cx) / 2, by + 20, svgSafeLabel(labels.BC), { fontSize: 13 });
+    if (labels.AC) s += svgHelper.text((ax + cx) / 2 + 12, (ay + cy) / 2 - 8, svgSafeLabel(labels.AC), { fontSize: 13 });
 
-    // 각도 표시
+    // 각도 표시 (빗변과 겹치지 않도록 AB쪽으로 배치)
     if (labels.angleA) {
-      s += svgHelper.arc(ax, ay, 20, 270, 270 + 45, { stroke: '#e74c3c' });
-      s += svgHelper.text(ax + 22, ay + 22, labels.angleA, { fontSize: 11, fill: '#e74c3c' });
+      s += svgHelper.arc(ax, ay, 20, 270, 315, { stroke: '#e74c3c' });
+      s += svgHelper.text(ax + 12, ay + 34, labels.angleA, { fontSize: 11, fill: '#e74c3c', anchor: 'start' });
     }
     if (labels.angleC) {
       s += svgHelper.arc(cx, cy, 20, 135, 180, { stroke: '#e74c3c' });
