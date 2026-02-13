@@ -70,8 +70,17 @@
       }
 
       var correctVal = askBase ? baseAngle : vertex;
+      var labels;
+      if (askBase) {
+        labels = { A: vertex + '\u00B0', B: '?', C: '?' };
+      } else {
+        labels = { A: 'x\u00B0', B: baseAngle + '\u00B0', C: baseAngle + '\u00B0' };
+      }
       var svgStr = svgHelper.open(250, 200);
-      svgStr += svgHelper.triangle(125, 20, 30, 180, 220, 180, {});
+      svgStr += svgHelper.triangle(125, 20, 30, 180, 220, 180, labels);
+      // 이등변 표시 (AB = AC 등변 틱마크)
+      svgStr += svgHelper.line(70, 92, 76, 104, { stroke: '#333', strokeWidth: 1.5 });
+      svgStr += svgHelper.line(174, 104, 180, 92, { stroke: '#333', strokeWidth: 1.5 });
       svgStr += svgHelper.close();
 
       var distractors = utils.generateDistractors(correctVal, 3, function() {
