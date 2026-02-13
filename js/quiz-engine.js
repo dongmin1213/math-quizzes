@@ -156,7 +156,17 @@
     selectChoice: function(choiceIndex) {
       state.answers[state.currentIndex] = choiceIndex;
       this.saveAnswers();
-      this.showProblem(state.currentIndex); // 선택 표시 갱신
+
+      // 선택 버튼만 갱신 (전체 리렌더링 방지 → 깜빡임 해소)
+      var buttons = document.querySelectorAll('.choice-btn');
+      for (var i = 0; i < buttons.length; i++) {
+        if (parseInt(buttons[i].getAttribute('data-choice')) === choiceIndex) {
+          buttons[i].classList.add('selected');
+        } else {
+          buttons[i].classList.remove('selected');
+        }
+      }
+      this.renderProgressDots();
     },
 
     onShortAnswerInput: function(value) {
