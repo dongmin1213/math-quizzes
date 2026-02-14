@@ -285,6 +285,7 @@ svg.coordinateGrid(xMin, xMax, yMin, yMax, w, h, opts) // 좌표평면
 - **IIFE로 스코프 격리**: 전역 변수 오염 방지
 - **세미콜론 필수**
 - **들여쓰기**: 스페이스 2칸
+- **falsy 체크 주의**: `!str`이나 `|| ''` 사용 금지 (숫자 0이 빈 문자열로 사라짐). 대신 `str === null || str === undefined || str === ''` 또는 `str != null ? str : ''` 사용
 
 ## CSS 변수 (디자인 토큰)
 
