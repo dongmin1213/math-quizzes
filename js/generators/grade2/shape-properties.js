@@ -89,7 +89,8 @@
         return utils.randChoice([180 - correctVal, correctVal + utils.randIntNonZero(-10, 10), 90 - correctVal / 2, correctVal * 2]);
       });
       distractors = distractors.filter(function(d) { return d > 0 && d < 180; });
-      while (distractors.length < 3) {
+      var _safe = 0;
+      while (distractors.length < 3 && _safe++ < 20) {
         var extra = correctVal + utils.randIntNonZero(-20, 20);
         if (extra > 0 && extra < 180 && extra !== correctVal && distractors.indexOf(extra) === -1) {
           distractors.push(extra);
@@ -140,7 +141,8 @@
         return utils.randChoice([180 - a, 180 - b, exterior + utils.randIntNonZero(-10, 10), 180 - exterior]);
       });
       distractors = distractors.filter(function(d) { return d > 0 && d < 360 && d !== exterior; });
-      while (distractors.length < 3) {
+      var _safe = 0;
+      while (distractors.length < 3 && _safe++ < 20) {
         distractors.push(exterior + utils.randIntNonZero(-15, 15));
         distractors = distractors.filter(function(d) { return d > 0 && d < 360 && d !== exterior; });
         distractors = utils.unique(distractors);
@@ -198,7 +200,8 @@
         return utils.randChoice([angle1, 360 - angle1, angle2 + utils.randIntNonZero(-10, 10), 90]);
       });
       distractors = distractors.filter(function(d) { return d > 0 && d < 360 && d !== angle2; });
-      while (distractors.length < 3) {
+      var _safe = 0;
+      while (distractors.length < 3 && _safe++ < 20) {
         distractors.push(angle2 + utils.randIntNonZero(-15, 15));
         distractors = distractors.filter(function(d) { return d > 0 && d < 360 && d !== angle2; });
         distractors = utils.unique(distractors);
@@ -333,7 +336,8 @@
         return utils.randChoice([(n - 1) * 180, (n - 3) * 180, n * 180, sum + 180, sum - 180]);
       });
       distractors = distractors.filter(function(d) { return d > 0 && d !== sum; });
-      while (distractors.length < 3) {
+      var _safe = 0;
+      while (distractors.length < 3 && _safe++ < 20) {
         distractors.push(sum + utils.randChoice([-360, -180, 180, 360]));
         distractors = distractors.filter(function(d) { return d > 0 && d !== sum; });
         distractors = utils.unique(distractors);
@@ -425,7 +429,8 @@
         ]);
       });
       distractors = distractors.filter(function(d) { return d > 0 && d === Math.floor(d) && d !== count; });
-      while (distractors.length < 3) {
+      var _safe = 0;
+      while (distractors.length < 3 && _safe++ < 20) {
         var nd = count + utils.randIntNonZero(-5, 5);
         if (nd > 0 && nd !== count && distractors.indexOf(nd) === -1) {
           distractors.push(nd);
