@@ -78,9 +78,11 @@
       }
       var svgStr = svgHelper.open(250, 200);
       svgStr += svgHelper.triangle(125, 20, 30, 180, 220, 180, labels);
-      // 이등변 표시 (AB = AC 등변 틱마크)
-      svgStr += svgHelper.line(70, 92, 76, 104, { stroke: '#333', strokeWidth: 1.5 });
-      svgStr += svgHelper.line(174, 104, 180, 92, { stroke: '#333', strokeWidth: 1.5 });
+      // 이등변 표시 (AB = AC 등변 틱마크, 변에 수직인 짧은 선분)
+      // AB 중점(77.5,100), 수직방향(0.859,0.510), 반길이4px
+      svgStr += svgHelper.line(74, 98, 81, 102, { stroke: '#333', strokeWidth: 1.5 });
+      // AC 중점(172.5,100), 수직방향(0.859,-0.510), 반길이4px
+      svgStr += svgHelper.line(169, 102, 176, 98, { stroke: '#333', strokeWidth: 1.5 });
       svgStr += svgHelper.close();
 
       var distractors = utils.generateDistractors(correctVal, 3, function() {
