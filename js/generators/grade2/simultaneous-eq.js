@@ -25,7 +25,8 @@
       a2 = utils.randInt(1, 3);
       b2 = utils.randInt(1, 3);
       // 두 식이 같지 않도록
-      while (a1 * b2 === a2 * b1) {
+      var _safe = 0;
+      while (a1 * b2 === a2 * b1 && _safe++ < 20) {
         a2 = utils.randInt(1, 3);
         b2 = utils.randInt(1, 3);
       }
@@ -37,7 +38,8 @@
       b1 = utils.randIntNonZero(-5, 5);
       a2 = utils.randIntNonZero(-5, 5);
       b2 = utils.randIntNonZero(-5, 5);
-      while (a1 * b2 === a2 * b1) {
+      var _safe = 0;
+      while (a1 * b2 === a2 * b1 && _safe++ < 20) {
         a2 = utils.randIntNonZero(-5, 5);
         b2 = utils.randIntNonZero(-5, 5);
       }
@@ -49,7 +51,8 @@
       b1 = utils.randIntNonZero(-7, 7);
       a2 = utils.randIntNonZero(-7, 7);
       b2 = utils.randIntNonZero(-7, 7);
-      while (a1 * b2 === a2 * b1) {
+      var _safe = 0;
+      while (a1 * b2 === a2 * b1 && _safe++ < 20) {
         a2 = utils.randIntNonZero(-7, 7);
         b2 = utils.randIntNonZero(-7, 7);
       }

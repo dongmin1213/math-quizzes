@@ -216,24 +216,24 @@
           // 한 변과 각도로 다른 변 구하기
           var angle = utils.randChoice([30, 45, 60]);
           var known = utils.randChoice(['hypotenuse', 'adjacent', 'opposite']);
-          var find = utils.randChoice(['sin', 'cos', 'tan']);
 
           var hyp, adj, opp;
+          var a;
           if (angle === 30) {
             // 30-60-90: opp=a, adj=a√3, hyp=2a
-            var a = utils.randChoice([2, 3, 4, 5, 6, 8, 10]);
+            a = utils.randChoice([2, 3, 4, 5, 6, 8, 10]);
             opp = a;
             adj = a + '\\sqrt{3}';
             hyp = 2 * a;
           } else if (angle === 45) {
             // 45-45-90: opp=adj=a, hyp=a√2
-            var a = utils.randChoice([2, 3, 4, 5, 6, 7]);
+            a = utils.randChoice([2, 3, 4, 5, 6, 7]);
             opp = a;
             adj = a;
             hyp = a + '\\sqrt{2}';
           } else {
             // 60-30-90: opp=a√3, adj=a, hyp=2a
-            var a = utils.randChoice([2, 3, 4, 5, 6, 8]);
+            a = utils.randChoice([2, 3, 4, 5, 6, 8]);
             opp = a + '\\sqrt{3}';
             adj = a;
             hyp = 2 * a;
@@ -334,7 +334,8 @@
             for (var i = 0; i < choices.length; i++) {
               if (!seen[choices[i]]) { seen[choices[i]] = true; unique.push(choices[i]); }
             }
-            while (unique.length < 4) {
+            var _safe = 0;
+            while (unique.length < 4 && _safe++ < 20) {
               unique.push('$' + utils.fractionToLatex(oppSide + 1, hypSide) + '$');
             }
             choices = utils.shuffle(unique);
@@ -369,7 +370,8 @@
               choices = ['$' + products[angle] + '$', '$\\frac{1}{2}$', '$\\frac{\\sqrt{3}}{2}$', '$\\frac{1}{4}$'];
               var seen = {};
               choices = choices.filter(function(c) { if (seen[c]) return false; seen[c] = true; return true; });
-              while (choices.length < 4) choices.push('$\\frac{3}{4}$');
+              var _safe2 = 0;
+              while (choices.length < 4 && _safe2++ < 20) choices.push('$\\frac{3}{4}$');
               choices = utils.shuffle(choices);
               answerIndex = choices.indexOf(answer);
             }
@@ -395,7 +397,8 @@
               choices = ['$' + tanSq[angle] + '$', '$\\frac{1}{3}$', '$1$', '$3$'];
               var seen2 = {};
               choices = choices.filter(function(c) { if (seen2[c]) return false; seen2[c] = true; return true; });
-              while (choices.length < 4) choices.push('$\\frac{\\sqrt{3}}{3}$');
+              var _safe3 = 0;
+              while (choices.length < 4 && _safe3++ < 20) choices.push('$\\frac{\\sqrt{3}}{3}$');
               choices = utils.shuffle(choices);
               answerIndex = choices.indexOf(answer);
             }

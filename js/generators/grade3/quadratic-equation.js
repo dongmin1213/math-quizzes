@@ -41,7 +41,8 @@
           // (x-r1)(x-r2) = 0, r1, r2 > 0
           var r1 = utils.randInt(1, 9);
           var r2 = utils.randInt(1, 9);
-          while (r2 === r1) { r2 = utils.randInt(1, 9); }
+          var _safe = 0;
+          while (r2 === r1 && _safe++ < 20) { r2 = utils.randInt(1, 9); }
           if (r1 > r2) { var tmp = r1; r1 = r2; r2 = tmp; }
 
           var b = -(r1 + r2);
@@ -121,7 +122,8 @@
           // 음수 근 포함: (x-r1)(x-r2) = 0
           var r1 = utils.randInt(-8, -1);
           var r2 = utils.randIntNonZero(-5, 8);
-          while (r2 === r1) { r2 = utils.randIntNonZero(-5, 8); }
+          var _safe = 0;
+          while (r2 === r1 && _safe++ < 20) { r2 = utils.randIntNonZero(-5, 8); }
           if (r1 > r2) { var tmp = r1; r1 = r2; r2 = tmp; }
 
           var b = -(r1 + r2);
@@ -202,13 +204,13 @@
 
           var rootCount = disc > 0 ? '서로 다른 두 근' : (disc === 0 ? '중근 (한 근)' : '근이 없다');
           answer = rootCount;
-          explanation = '판별식 $D = b^2 - 4ac = ' + (b) + '^2 - 4 \\cdot ' + a + ' \\cdot ' + (c >= 0 ? c : '(' + c + ')') + ' = ' + disc + '$ ';
+          explanation = '판별식 $D = b^2 - 4ac = ' + (b) + '^2 - 4 \\cdot ' + a + ' \\cdot ' + (c >= 0 ? c : '(' + c + ')') + ' = ' + disc;
           if (disc > 0) {
-            explanation += '$ > 0$ 이므로 서로 다른 두 근을 가집니다.';
+            explanation += ' > 0$ 이므로 서로 다른 두 근을 가집니다.';
           } else if (disc === 0) {
-            explanation += '$ = 0$ 이므로 중근을 가집니다.';
+            explanation += ' = 0$ 이므로 중근을 가집니다.';
           } else {
-            explanation += '$ < 0$ 이므로 근이 없습니다.';
+            explanation += ' < 0$ 이므로 근이 없습니다.';
           }
 
           if (type === 'multiple-choice') {
@@ -225,7 +227,8 @@
           var a = utils.randChoice([2, 3]);
           var r1 = utils.randIntNonZero(-5, 5);
           var r2 = utils.randIntNonZero(-5, 5);
-          while (r2 === r1) { r2 = utils.randIntNonZero(-5, 5); }
+          var _safe = 0;
+          while (r2 === r1 && _safe++ < 20) { r2 = utils.randIntNonZero(-5, 5); }
           if (r1 > r2) { var tmp = r1; r1 = r2; r2 = tmp; }
 
           var bCoeff = -a * (r1 + r2);
@@ -267,14 +270,14 @@
 
           // c가 정수가 아니면 재조정
           if (c !== Math.floor(c)) {
-            b = 2 * utils.randIntNonZero(-4, 4);
+            // k=1로 고정하여 D=sqPart
+            k = 1;
             D = sqPart;
+            b = 2 * utils.randIntNonZero(-4, 4);
             c = (b * b - D) / 4;
             if (c !== Math.floor(c)) {
-              // 안전한 기본값
-              b = -4; sqPart = 3; D = 3; c = (16 - 3) / 4;
-              // 여전히 안 되면 정수 근으로 대체
-              b = -3; c = 1; D = 9 - 4; sqPart = 5;
+              // 안전한 기본값: x²-2x-1=0 (D=8=2²·2, 근: 1±√2)
+              b = -2; c = -1; sqPart = 2; k = 1; D = 2;
             }
           }
 

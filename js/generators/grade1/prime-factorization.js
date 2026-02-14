@@ -230,7 +230,8 @@
           return correctCount + utils.randIntNonZero(-3, 3);
         });
         distractors = distractors.filter(function(d) { return d > 0; });
-        while (distractors.length < 3) {
+        var _safe = 0;
+        while (distractors.length < 3 && _safe++ < 20) {
           distractors.push(correctCount + distractors.length + 1);
         }
 
@@ -372,7 +373,8 @@
           var distractors = utils.generateDistractors(correctAnswer, 3, function() {
             return utils.randChoice(divisors.filter(function(d) { return d !== correctAnswer; }));
           });
-          while (distractors.length < 3) {
+          var _safe2 = 0;
+          while (distractors.length < 3 && _safe2++ < 20) {
             distractors.push(correctAnswer + utils.randIntNonZero(-5, 5));
           }
 
@@ -417,13 +419,15 @@
             return correctCount + utils.randIntNonZero(-3, 3);
           });
           distractors2 = distractors2.filter(function(d) { return d > 0; });
-          while (distractors2.length < 3) {
+          var _safe3 = 0;
+          while (distractors2.length < 3 && _safe3++ < 20) {
             distractors2.push(correctCount + distractors2.length + 1);
           }
 
           var choices2 = [String(correctCount)].concat(distractors2.slice(0, 3).map(String));
           choices2 = utils.unique(choices2).slice(0, 4);
-          while (choices2.length < 4) {
+          var _safe4 = 0;
+          while (choices2.length < 4 && _safe4++ < 20) {
             choices2.push(String(correctCount + choices2.length + 2));
           }
           choices2 = utils.shuffle(choices2);

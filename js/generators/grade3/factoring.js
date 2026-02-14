@@ -34,7 +34,8 @@
           var cf = utils.randInt(2, 7);
           var t1 = utils.randIntNonZero(-6, 6);
           var t2 = utils.randIntNonZero(-6, 6);
-          while (t1 === t2) { t2 = utils.randIntNonZero(-6, 6); }
+          var _safe = 0;
+          while (t1 === t2 && _safe++ < 20) { t2 = utils.randIntNonZero(-6, 6); }
 
           // cf*x(t1*x + t2) => cf*t1*x² + cf*t2*x
           var a = cf * t1;
@@ -95,7 +96,8 @@
           var cf = utils.randInt(2, 6);
           var v1 = utils.randIntNonZero(-5, 5);
           var v2 = utils.randIntNonZero(-5, 5);
-          while (v1 === v2) { v2 = utils.randIntNonZero(-5, 5); }
+          var _safe = 0;
+          while (v1 === v2 && _safe++ < 20) { v2 = utils.randIntNonZero(-5, 5); }
 
           // cf(v1x + v2) = cf*v1*x + cf*v2
           var termA = cf * v1;
@@ -135,7 +137,8 @@
           // 간단한 이차식: x² + bx + c = (x+p)(x+q) (p+q=b, pq=c)
           var p = utils.randIntNonZero(-6, 6);
           var q = utils.randIntNonZero(-6, 6);
-          while (p === q || p + q === 0) { q = utils.randIntNonZero(-6, 6); }
+          var _safe = 0;
+          while ((p === q || p + q === 0) && _safe++ < 20) { q = utils.randIntNonZero(-6, 6); }
 
           var bCoeff = p + q;
           var cConst = p * q;
@@ -245,7 +248,8 @@
           // x² + bx + c = (x+p)(x+q), p+q=b, pq=c
           var p = utils.randIntNonZero(-8, 8);
           var q = utils.randIntNonZero(-8, 8);
-          while (p === q && p > 0) { q = utils.randIntNonZero(-8, 8); }
+          var _safe = 0;
+          while (p === q && p > 0 && _safe++ < 20) { q = utils.randIntNonZero(-8, 8); }
 
           var bCoeff = p + q;
           var cCoeff = p * q;
@@ -279,7 +283,8 @@
           var pVal = 1;
           var n = utils.randIntNonZero(-5, 5);
           var qVal = utils.randIntNonZero(-5, 5);
-          while (n === qVal) { qVal = utils.randIntNonZero(-5, 5); }
+          var _safe = 0;
+          while (n === qVal && _safe++ < 20) { qVal = utils.randIntNonZero(-5, 5); }
 
           // (mx+n)(px+q) = mpx² + (mq+np)x + nq
           var aCoeff = m * pVal;
@@ -314,7 +319,8 @@
           // ax+ay+bx+by = (a+b)(x+y)
           var a = utils.randInt(2, 6);
           var b = utils.randInt(2, 6);
-          while (a === b) { b = utils.randInt(2, 6); }
+          var _safe = 0;
+          while (a === b && _safe++ < 20) { b = utils.randInt(2, 6); }
           // ax + ay + bx + by = (x+y)(a+b)
           var expanded = a + 'x+' + a + 'y+' + b + 'x+' + b + 'y';
           var factored = '(x+y)(' + a + '+' + b + ')';

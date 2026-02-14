@@ -144,29 +144,21 @@
       var x, a, c, b, d;
 
       if (allowFractionAnswer) {
-        // 분수 해를 허용
-        var den = utils.randChoice([2, 3, 4, 5]);
-        var num = utils.randIntNonZero(-10, 10);
-        x = num; // 실제 값은 num/den
+        // 분수 해를 허용: 정수 해로 생성 (분수 표현이 채점에서 어려우므로)
+        x = utils.randIntNonZero(-8, 8);
         a = utils.randIntNonZero(2, 6);
         c = utils.randIntNonZero(2, 6);
-        while (a === c) c = utils.randIntNonZero(2, 6);
-        // (a - c) * (num/den) = d - b
-        // 이를 정수로 만들기 위해: a-c의 배수가 되도록
+        var _safe = 0;
+        while (a === c && _safe++ < 20) c = utils.randIntNonZero(2, 6);
         var diff = a - c;
         b = utils.randIntNonZero(-10, 10);
-        d = diff * num / den + b;
-        // d가 정수가 아니면 다시 시도
-        if (d !== Math.floor(d)) {
-          // 정수 해로 폴백
-          x = utils.randIntNonZero(-8, 8);
-          d = diff * x + b;
-        }
+        d = diff * x + b;
       } else {
         x = utils.randIntNonZero(-8, 8);
         a = utils.randIntNonZero(2, 7);
         c = utils.randIntNonZero(1, 6);
-        while (a === c) c = utils.randIntNonZero(1, 6);
+        var _safe2 = 0;
+        while (a === c && _safe2++ < 20) c = utils.randIntNonZero(1, 6);
         b = utils.randIntNonZero(-12, 12);
         d = (a - c) * x + b;
       }
@@ -222,21 +214,14 @@
       var a = utils.randIntNonZero(2, 4);
       var d = a * inner;
 
-      // 우변에 상수 추가 가능
-      var e = utils.randIntNonZero(-10, 10);
-      var rhs = d + e;
-
       var lhs;
       if (a < 0) {
         lhs = '(' + a + ')(' + utils.coeffStr(b, 'x', true) + utils.constStr(c, false) + ')';
       } else {
         lhs = a + '(' + utils.coeffStr(b, 'x', true) + utils.constStr(c, false) + ')';
       }
-      var equation = lhs + utils.constStr(e, false) + ' = ' + rhs + utils.constStr(e, false);
-
-      // 단순화: a(bx+c) = d
-      equation = lhs + ' = ' + d;
-      rhs = d;
+      var equation = lhs + ' = ' + d;
+      var rhs = d;
 
       var expanded = a * b;
       var expandedConst = a * c;

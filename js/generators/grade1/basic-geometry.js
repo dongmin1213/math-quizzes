@@ -333,7 +333,8 @@
         // 10의 배수로 깔끔한 각도
         a1 = utils.randChoice([30, 40, 50, 60, 70, 80]);
         a2 = utils.randChoice([30, 40, 50, 60, 70, 80]);
-        while (a1 + a2 >= 170 || a1 + a2 <= 20) {
+        var _safe = 0;
+        while ((a1 + a2 >= 170 || a1 + a2 <= 20) && _safe++ < 20) {
           a2 = utils.randChoice([30, 40, 50, 60, 70, 80]);
         }
       } else {

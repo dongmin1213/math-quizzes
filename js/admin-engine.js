@@ -48,8 +48,10 @@
       for (var i = 0; i < tabs.length; i++) {
         tabs[i].addEventListener('click', function() {
           var target = this.getAttribute('data-tab');
-          document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
-          document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+          var allTabs = document.querySelectorAll('.admin-tab');
+          for (var j = 0; j < allTabs.length; j++) { allTabs[j].classList.remove('active'); }
+          var allContents = document.querySelectorAll('.tab-content');
+          for (var j = 0; j < allContents.length; j++) { allContents[j].classList.remove('active'); }
           this.classList.add('active');
           document.getElementById('tab-' + target).classList.add('active');
 
@@ -142,7 +144,7 @@
           if (res.success) {
             MathQuiz.admin.renderDeployedStatus(res.data);
           } else {
-            container.innerHTML = '<div class="message message-error">' + (res.error || '조회 실패') + '</div>';
+            container.innerHTML = '<div class="message message-error">' + escapeAttr(res.error || '조회 실패') + '</div>';
           }
         }).catch(function() {
           container.innerHTML = '<div class="message message-error">배포 현황 조회 실패</div>';
@@ -160,7 +162,7 @@
         html += '<div class="deploy-status-card' + (hasQuiz ? ' active' : '') + '">';
         html += '<div class="deploy-grade">중' + s.grade + '</div>';
         if (hasQuiz) {
-          html += '<div class="deploy-topic">' + s.topic + '</div>';
+          html += '<div class="deploy-topic">' + escapeAttr(s.topic) + '</div>';
           html += '<div class="deploy-detail">' + s.problemCount + '문제</div>';
           var time = s.createdAt ? new Date(s.createdAt).toLocaleString('ko-KR') : '';
           html += '<div class="deploy-detail">' + time + '</div>';
@@ -353,7 +355,7 @@
           if (res.success) {
             MathQuiz.admin.renderResults(res.data, {});
           } else {
-            container.innerHTML = '<div class="message message-error">' + (res.error || '조회 실패') + '</div>';
+            container.innerHTML = '<div class="message message-error">' + escapeAttr(res.error || '조회 실패') + '</div>';
           }
         }).catch(function() {
           container.innerHTML = '<div class="message message-error">서버 연결 실패</div>';
@@ -441,10 +443,10 @@
         var r = sorted[j];
         var time = r['제출시간'] ? new Date(r['제출시간']).toLocaleString('ko-KR') : '';
         html += '<tr>';
-        html += '<td><strong>' + (r['학생이름'] || '') + '</strong></td>';
-        html += '<td>중' + (r['학년'] || '') + '</td>';
-        html += '<td>' + (r['반'] || '') + '</td>';
-        html += '<td>' + (r['단원'] || '') + '</td>';
+        html += '<td><strong>' + escapeAttr(r['학생이름'] || '') + '</strong></td>';
+        html += '<td>중' + escapeAttr(r['학년'] || '') + '</td>';
+        html += '<td>' + escapeAttr(r['반'] || '') + '</td>';
+        html += '<td>' + escapeAttr(r['단원'] || '') + '</td>';
         html += '<td>' + (r['점수'] || 0) + '/' + (r['총문제수'] || 0) + '</td>';
         html += '<td>' + (r['정답률'] || '') + '</td>';
         html += '<td style="font-size:12px;color:var(--text-light)">' + time + '</td>';

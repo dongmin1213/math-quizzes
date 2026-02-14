@@ -83,7 +83,8 @@
   function generateTwoSideInequality() {
     var a = utils.randIntNonZero(-6, 6);
     var c = utils.randIntNonZero(-6, 6);
-    while (a === c) { c = utils.randIntNonZero(-6, 6); }
+    var _safe = 0;
+    while (a === c && _safe++ < 20) { c = utils.randIntNonZero(-6, 6); }
 
     var ineqIdx = utils.randInt(0, 3);
     var ineq = ineqSymbols[ineqIdx];
@@ -285,7 +286,8 @@
       return count + utils.randChoice([-2, -1, 1, 2, 3]);
     });
     distractors = distractors.filter(function(d) { return d > 0; });
-    while (distractors.length < 3) {
+    var _safe = 0;
+    while (distractors.length < 3 && _safe++ < 20) {
       distractors.push(count + distractors.length + 1);
     }
 
@@ -309,25 +311,18 @@
 
   // 난이도 3: 정수 해의 개수 구하기
   function generateCountIntegerSolutions() {
-    var a = utils.randIntNonZero(-5, 5);
+    // a를 양수로 고정하여 ax + b < c => x < (c-b)/a 형태의 상한이 존재하도록 보장
+    var a = utils.randInt(1, 5);
     var b = utils.randIntNonZero(-15, 15);
     var c = utils.randIntNonZero(-15, 15);
 
-    // ax + b < c => ax < c-b => x < (c-b)/a or x > (c-b)/a
+    // ax + b < c => ax < c-b => x < (c-b)/a
     var rhs = c - b;
-    var isPositiveA = a > 0;
 
-    // 구간을 만들기 위해 두 번째 부등식 추가
-    var lower, upper;
-    if (isPositiveA) {
-      upper = Math.floor(rhs / a); // x 의 상한 (< 이면)
-      if (rhs % a === 0) upper = upper - 1; // strict inequality
-      lower = utils.randInt(upper - 6, upper - 2);
-    } else {
-      lower = Math.ceil(rhs / a); // x의 하한 (> 이면)
-      if (rhs % a === 0) lower = lower + 1;
-      upper = utils.randInt(lower + 2, lower + 6);
-    }
+    // 구간을 만들기 위해 두 번째 부등식 추가: lower <= x < upper
+    var upper = Math.floor(rhs / a);
+    if (rhs % a === 0) upper = upper - 1; // strict inequality
+    var lower = utils.randInt(upper - 6, upper - 2);
 
     // 정수 해 개수 = upper - lower + 1
     var count = upper - lower + 1;
@@ -345,12 +340,7 @@
 
     var explanation = '$' + lhs1 + ' < ' + c + '$에서 ';
     explanation += '$' + utils.coeffStr(a, 'x', true) + ' < ' + rhs + '$\n';
-    if (a < 0) {
-      explanation += '양변을 $' + a + '$으로 나누면 (부등호 반전) ';
-      explanation += '$x > ' + utils.fractionToLatex(rhs, a) + '$\n';
-    } else {
-      explanation += '$x < ' + utils.fractionToLatex(rhs, a) + '$\n';
-    }
+    explanation += '$x < ' + utils.fractionToLatex(rhs, a) + '$\n';
     explanation += '$' + lower + ' \\leq x$ 조건과 합치면 ';
     explanation += '정수 $x$는 $' + lower + ', ' + (lower + 1) + ', \\ldots, ' + upper + '$으로 총 $' + count + '$개';
 
@@ -361,7 +351,8 @@
     });
     // 음수 개수는 제거
     distractors = distractors.filter(function(d) { return d > 0; });
-    while (distractors.length < 3) {
+    var _safe2 = 0;
+    while (distractors.length < 3 && _safe2++ < 20) {
       var nd = count + utils.randIntNonZero(1, 5);
       if (nd !== count && nd > 0 && distractors.indexOf(nd) === -1) {
         distractors.push(nd);

@@ -105,7 +105,8 @@
           var primes = [2, 3, 5, 7, 11, 13];
           var a = utils.randChoice(primes);
           var b;
-          do { b = utils.randChoice(primes); } while (b === a);
+          var _safe = 0;
+          do { b = utils.randChoice(primes); } while (b === a && _safe++ < 20);
           if (a > b) { var tmp = a; a = b; b = tmp; }
 
           questionText = '$\\sqrt{' + a + '}$ 와 $\\sqrt{' + b + '}$ 의 대소 관계를 나타내시오.';

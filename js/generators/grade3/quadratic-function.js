@@ -318,7 +318,6 @@
               '$' + p + '$',
               '$' + (q + a) + '$'
             ];
-            choices = choices.map(function(c) { return c; });
             choices = utils.shuffle(choices);
             answerIndex = choices.indexOf(answer);
           }

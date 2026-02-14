@@ -175,7 +175,8 @@
           var size = utils.randChoice([7, 8, 9]);
           var data = [];
           for (var i = 0; i < modeFreq; i++) data.push(modeVal);
-          while (data.length < size) {
+          var _safe = 0;
+          while (data.length < size && _safe++ < 200) {
             var v = utils.randInt(modeVal - 5, modeVal + 5);
             // 다른 값의 빈도가 modeFreq보다 작도록
             var cnt = 0;
@@ -257,19 +258,12 @@
           var targetMean = utils.randInt(5, 15);
           // 편차 배열을 먼저 구성 (합이 0)
           var deviations;
-          var targetVar = utils.randChoice([2, 4, 6, 8]);
+          var targetVar = utils.randChoice([2, 4, 8]);
           // 간단한 편차 구성
           if (targetVar === 2) {
             deviations = [-2, -1, 0, 1, 2]; // 편차제곱합=10, 분산=2
           } else if (targetVar === 4) {
             deviations = [-3, -1, 0, 1, 3]; // 편차제곱합=20, 분산=4
-          } else if (targetVar === 6) {
-            deviations = [-4, -1, 0, 1, 4]; // 편차제곱합=34... 안 맞음
-            // 수정: [-3, -2, 0, 2, 3] => 편차제곱합=26... 아니다
-            deviations = [-3, -1, -1, 1, 4]; // 합=0, 편차제곱합=9+1+1+1+16=28
-            // 간단히 다시
-            targetVar = 4;
-            deviations = [-3, -1, 0, 1, 3];
           } else {
             deviations = [-4, -2, 0, 2, 4]; // 편차제곱합=40, 분산=8
           }
@@ -393,24 +387,14 @@
           var targetVarRoot = utils.randChoice([1, 2, 3]);
           var targetVariance = targetVarRoot * targetVarRoot;
 
-          // 분산이 targetVariance가 되는 편차 구성
+          // 분산이 targetVariance가 되는 편차 구성 (n=4)
+          n = 4;
           var deviations;
           if (targetVariance === 1) {
-            deviations = [-1, -1, 0, 1, 1]; // 편차제곱합=4, 분산=4/5... 안 맞음
-            // 수정: 편차제곱합 = n * var = 5
-            deviations = [-2, 0, 0, 0, 2]; // 편차제곱합=8, 분산=8/5
-            // 더 간단하게: 4개
-            n = 4;
             deviations = [-1, -1, 1, 1]; // 편차제곱합=4, 분산=1, 표준편차=1
           } else if (targetVariance === 4) {
-            n = 5;
-            deviations = [-4, -2, 0, 2, 4]; // 편차제곱합=40, 분산=8... 아님
-            deviations = [-2, -2, 0, 2, 2]; // 편차제곱합=16, 분산=16/5... 아님
-            // n=4
-            n = 4;
             deviations = [-2, -2, 2, 2]; // 편차제곱합=16, 분산=4, 표준편차=2
           } else { // 9
-            n = 4;
             deviations = [-3, -3, 3, 3]; // 편차제곱합=36, 분산=9, 표준편차=3
           }
 

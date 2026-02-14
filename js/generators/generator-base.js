@@ -10,8 +10,8 @@ MathQuiz.utils = {
 
   // 0이 아닌 랜덤 정수
   randIntNonZero: function(min, max) {
-    var n;
-    do { n = this.randInt(min, max); } while (n === 0);
+    var n, _safe = 0;
+    do { n = this.randInt(min, max); } while (n === 0 && _safe++ < 100);
     return n;
   },
 

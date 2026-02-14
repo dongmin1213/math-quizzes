@@ -55,7 +55,10 @@
       if (savedAnswers) {
         state.answers = JSON.parse(savedAnswers);
       } else {
-        state.answers = new Array(state.problems.length).fill(null);
+        state.answers = [];
+        for (var k = 0; k < state.problems.length; k++) {
+          state.answers.push(null);
+        }
       }
 
       this.renderProgressDots();

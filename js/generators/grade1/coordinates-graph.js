@@ -362,13 +362,15 @@
         y2 = y1;
         x1 = utils.randIntNonZero(-range, range);
         x2 = utils.randIntNonZero(-range, range);
-        while (x2 === x1) x2 = utils.randIntNonZero(-range, range);
+        var _safe2 = 0;
+        while (x2 === x1 && _safe2++ < 20) x2 = utils.randIntNonZero(-range, range);
       } else {
         x1 = utils.randIntNonZero(-range, range);
         x2 = x1;
         y1 = utils.randIntNonZero(-range, range);
         y2 = utils.randIntNonZero(-range, range);
-        while (y2 === y1) y2 = utils.randIntNonZero(-range, range);
+        var _safe3 = 0;
+        while (y2 === y1 && _safe3++ < 20) y2 = utils.randIntNonZero(-range, range);
       }
 
       var correctAnswer = parallel === 'horizontal'

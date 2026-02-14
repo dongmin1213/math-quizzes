@@ -252,7 +252,8 @@
           // 접선의 길이: 외부점에서 두 접선 길이 같음
           var r = utils.randChoice([3, 4, 5, 6]);
           var d = utils.randChoice([5, 7, 8, 10, 13]); // 중심까지의 거리 (d > r)
-          while (d <= r) { d = utils.randInt(r + 2, r + 10); }
+          var _safe = 0;
+          while (d <= r && _safe++ < 20) { d = utils.randInt(r + 2, r + 10); }
 
           // 접선 길이 = √(d²-r²)
           var tangentSq = d * d - r * r;

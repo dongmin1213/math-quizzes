@@ -298,10 +298,12 @@
     _fracDiv: function(difficulty, type) {
       // 역생성: 깔끔한 답이 나오도록
       var f2 = simpleFraction(difficulty);
-      while (f2.num === 0) f2 = simpleFraction(difficulty);
+      var _safe = 0;
+      while (f2.num === 0 && _safe++ < 20) f2 = simpleFraction(difficulty);
 
       var simplified = simpleFraction(difficulty);
-      while (simplified.num === 0) simplified = simpleFraction(difficulty);
+      var _safe2 = 0;
+      while (simplified.num === 0 && _safe2++ < 20) simplified = simpleFraction(difficulty);
 
       // f1 = answer * f2
       var f1Num = simplified.num * f2.num;
@@ -318,7 +320,8 @@
     _fracMixed: function(difficulty, type) {
       var f1 = simpleFraction(difficulty);
       var f2 = simpleFraction(difficulty);
-      while (f2.num === 0) f2 = simpleFraction(difficulty);
+      var _safe = 0;
+      while (f2.num === 0 && _safe++ < 20) f2 = simpleFraction(difficulty);
 
       var a = signedInt(1); // 정수
       // a + f1/f2 형태
