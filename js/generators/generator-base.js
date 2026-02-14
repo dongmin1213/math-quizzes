@@ -56,6 +56,8 @@ MathQuiz.utils = {
   // 소인수분해
   primeFactors: function(n) {
     var factors = {};
+    n = Math.abs(n);
+    if (n <= 1) return factors;
     var d = 2;
     while (n > 1) {
       while (n % d === 0) {

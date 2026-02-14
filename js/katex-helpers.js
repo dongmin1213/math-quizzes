@@ -25,21 +25,42 @@
     }
   };
 
+  function escapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   // $...$ 구분자를 KaTeX로 변환
   MathQuiz.renderInlineLatex = function(text) {
     if (!text) return '';
-    return text.replace(/\$\$(.+?)\$\$/g, function(match, latex) {
+    // 수식 토큰을 플레이스홀더로 치환 → 텍스트 이스케이프 → 수식 복원
+    var tokens = [];
+    var placeholder = function(rendered) {
+      var idx = tokens.length;
+      tokens.push(rendered);
+      return '\x00MATH' + idx + '\x00';
+    };
+    var result = text.replace(/\$\$(.+?)\$\$/g, function(match, latex) {
       try {
-        return katex.renderToString(latex, { throwOnError: false, displayMode: true });
+        return placeholder(katex.renderToString(latex, { throwOnError: false, displayMode: true }));
       } catch (e) {
-        return match;
+        return placeholder(escapeHtml(match));
       }
     }).replace(/\$(.+?)\$/g, function(match, latex) {
       try {
-        return katex.renderToString(latex, { throwOnError: false, displayMode: false });
+        return placeholder(katex.renderToString(latex, { throwOnError: false, displayMode: false }));
       } catch (e) {
-        return match;
+        return placeholder(escapeHtml(match));
       }
     });
+    // 수식 외부 텍스트를 이스케이프
+    result = result.replace(/([^\x00]+)/g, function(m) {
+      if (m.indexOf('MATH') === 0 && m.match(/^MATH\d+$/)) return m;
+      return escapeHtml(m);
+    });
+    // 플레이스홀더를 수식 HTML로 복원
+    result = result.replace(/\x00MATH(\d+)\x00/g, function(m, idx) {
+      return tokens[parseInt(idx, 10)];
+    });
+    return result;
   };
 })();

@@ -41,9 +41,10 @@
       var size = opts.fontSize || 14;
       var anchor = opts.anchor || 'middle';
       var fill = opts.fill || '#333';
+      var safe = String(content).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       return '<text x="' + x + '" y="' + y + '" font-size="' + size +
         '" text-anchor="' + anchor + '" fill="' + fill +
-        '" font-family="sans-serif">' + content + '</text>';
+        '" font-family="sans-serif">' + safe + '</text>';
     },
 
     arc: function(cx, cy, r, startDeg, endDeg, opts) {
