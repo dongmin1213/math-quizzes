@@ -123,7 +123,7 @@
           html += '<div class="deploy-status-card' + (data ? ' active' : '') + '">';
           html += '<div class="deploy-grade">중' + g + '</div>';
           if (data) {
-            html += '<div class="deploy-topic">' + (data.topic || '-') + '</div>';
+            html += '<div class="deploy-topic">' + escapeAttr(data.topic || '-') + '</div>';
             html += '<div class="deploy-detail">' + (data.problemCount || 0) + '문제</div>';
             var time = data.createdAt ? new Date(data.createdAt).toLocaleString('ko-KR') : '';
             html += '<div class="deploy-detail">' + time + '</div>';
@@ -211,7 +211,7 @@
         document.getElementById('deploySection').classList.remove('hidden');
 
       } catch (err) {
-        statusEl.innerHTML = '<div class="message message-error">생성 실패: ' + err.message + '</div>';
+        statusEl.innerHTML = '<div class="message message-error">생성 실패: ' + escapeAttr(err.message) + '</div>';
         console.error(err);
       }
     },
@@ -324,11 +324,11 @@
         if (res.success) {
           deployStatus.innerHTML = '<div class="message message-success">' +
             '배포 완료! 중' + grade + ' 학생들이 바로 퀴즈를 풀 수 있습니다.<br>' +
-            '퀴즈 ID: ' + res.quizId + '</div>';
+            '퀴즈 ID: ' + escapeAttr(res.quizId) + '</div>';
           MathQuiz.admin.loadDeployedStatus();
         } else {
           deployStatus.innerHTML = '<div class="message message-error">배포 실패: ' +
-            (res.error || '알 수 없는 오류') + '</div>';
+            escapeAttr(res.error || '알 수 없는 오류') + '</div>';
         }
         deployBtn.disabled = false;
         deployBtn.textContent = '배포하기';
@@ -412,7 +412,7 @@
       html += '<select id="filterTopic" onchange="MathQuiz.admin.applyFilters()" style="padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;background:#fff">';
       html += '<option value="">전체 단원</option>';
       for (var topicName in topicSet) {
-        html += '<option value="' + escapeAttr(topicName) + '"' + (filters.topic === topicName ? ' selected' : '') + '>' + topicName + '</option>';
+        html += '<option value="' + escapeAttr(topicName) + '"' + (filters.topic === topicName ? ' selected' : '') + '>' + escapeAttr(topicName) + '</option>';
       }
       html += '</select>';
       html += '</div>';
@@ -429,7 +429,7 @@
       html += '<div class="stat-card"><div class="stat-value">' + totalCount + '</div><div class="stat-label">제출 수</div></div>';
       html += '<div class="stat-card"><div class="stat-value">' + avgScore + '%</div><div class="stat-label">평균 정답률</div></div>';
       if (filtered.length > 0) {
-        html += '<div class="stat-card"><div class="stat-value">' + filtered[filtered.length - 1]['단원'] + '</div><div class="stat-label">최근 단원</div></div>';
+        html += '<div class="stat-card"><div class="stat-value">' + escapeAttr(filtered[filtered.length - 1]['단원']) + '</div><div class="stat-label">최근 단원</div></div>';
       }
       html += '</div>';
 
@@ -501,7 +501,7 @@
           if (res.success) {
             MathQuiz.admin.renderDeployedQuiz(res.data, grade);
           } else {
-            area.innerHTML = '<div class="message message-info">' + (res.error || '중' + grade + ' 퀴즈가 아직 배포되지 않았습니다.') + '</div>';
+            area.innerHTML = '<div class="message message-info">' + escapeAttr(res.error || '중' + grade + ' 퀴즈가 아직 배포되지 않았습니다.') + '</div>';
           }
         }).catch(function() {
           area.innerHTML = '<div class="message message-error">서버 연결 실패</div>';
@@ -515,7 +515,7 @@
 
       var html = '<div class="card" style="margin-bottom:16px;padding:16px">';
       html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">';
-      html += '<div><strong style="font-size:18px">중' + grade + ' - ' + (data.topic || '') + '</strong>';
+      html += '<div><strong style="font-size:18px">중' + grade + ' - ' + escapeAttr(data.topic || '') + '</strong>';
       html += '<span style="margin-left:12px;font-size:14px;color:var(--text-light)">' + problems.length + '문제</span></div>';
       html += '<div style="font-size:13px;color:var(--text-light)">' + time + '</div>';
       html += '</div></div>';

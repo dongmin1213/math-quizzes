@@ -11,7 +11,8 @@
       // 삼각형 내각의 합 = 180도, 한 각 구하기
       var a = utils.randInt(30, 80);
       var b = utils.randInt(30, 80);
-      while (a + b >= 170) {
+      var _safe = 0;
+      while (a + b >= 170 && _safe++ < 20) {
         b = utils.randInt(30, 80);
       }
       var c = 180 - a - b;
@@ -118,7 +119,8 @@
       // 삼각형의 외각 = 이웃하지 않는 두 내각의 합
       var a = utils.randInt(30, 80);
       var b = utils.randInt(30, 80);
-      while (a + b >= 170) {
+      var _safe = 0;
+      while (a + b >= 170 && _safe++ < 20) {
         b = utils.randInt(30, 80);
       }
       var exterior = a + b;
@@ -228,7 +230,8 @@
       // 평행사변형: 대변의 길이가 같다
       var side1 = utils.randInt(4, 12);
       var side2 = utils.randInt(4, 12);
-      while (side1 === side2) { side2 = utils.randInt(4, 12); }
+      var _safe = 0;
+      while (side1 === side2 && _safe++ < 20) { side2 = utils.randInt(4, 12); }
 
       var questionText = '평행사변형 ABCD에서 $\\overline{AB} = ' + side1 + '$ cm, $\\overline{BC} = ' + side2 +
         '$ cm일 때, $\\overline{CD}$의 길이를 구하시오.';

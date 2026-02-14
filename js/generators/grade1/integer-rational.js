@@ -103,7 +103,6 @@
 
     // 정수 곱셈
     _intMul: function(difficulty, type) {
-      var r = intRange(difficulty);
       var a = signedInt(difficulty);
       var b = signedInt(Math.max(1, difficulty - 1));
       var answer = a * b;
