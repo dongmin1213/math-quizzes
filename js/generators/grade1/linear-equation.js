@@ -15,12 +15,17 @@
       var type = options.type || 'multiple-choice';
 
       if (difficulty === 1) {
-        return this._generateSimple(type);
+        var gen1 = utils.randChoice(['simple', 'oneStep', 'subtractForm', 'reverseForm']);
+        if (gen1 === 'simple') return this._generateSimple(type);
+        if (gen1 === 'oneStep') return this._generateOneStep(type);
+        if (gen1 === 'subtractForm') return this._generateSubtractForm(type);
+        return this._generateReverseForm(type);
       } else if (difficulty === 2) {
-        return utils.randChoice([
-          this._generateTwoStep(type),
-          this._generateBothSides(type, false)
-        ]);
+        var gen2 = utils.randChoice(['twoStep', 'bothSides', 'simpleDistrib', 'negativeCoeff']);
+        if (gen2 === 'twoStep') return this._generateTwoStep(type);
+        if (gen2 === 'bothSides') return this._generateBothSides(type, false);
+        if (gen2 === 'simpleDistrib') return this._generateSimpleDistrib(type);
+        return this._generateNegativeCoeff(type);
       } else {
         return utils.randChoice([
           this._generateBothSides(type, true),
@@ -41,6 +46,82 @@
       var equation = utils.coeffStr(a, 'x', true) + utils.constStr(b, false) + ' = ' + c;
 
       return this._buildResult(type, equation, x, '양변에서 $' + b + '$을 빼면 $' + a + 'x = ' + (c - b) + '$, 양변을 $' + a + '$로 나누면 $x = ' + x + '$');
+    },
+
+    // 난이도 1: 한 단계 방정식 (ax = c 또는 x + b = c)
+    _generateOneStep: function(type) {
+      var pattern = utils.randChoice(['mult', 'add']);
+      var x, equation, explanation;
+
+      if (pattern === 'mult') {
+        // ax = c
+        x = utils.randInt(2, 9);
+        var a = utils.randInt(2, 9);
+        var c = a * x;
+        equation = utils.coeffStr(a, 'x', true) + ' = ' + c;
+        explanation = '양변을 $' + a + '$로 나누면 $x = ' + x + '$';
+      } else {
+        // x + b = c
+        x = utils.randInt(1, 15);
+        var b = utils.randInt(1, 9);
+        var c = x + b;
+        equation = 'x' + utils.constStr(b, false) + ' = ' + c;
+        explanation = '양변에서 $' + b + '$을 빼면 $x = ' + x + '$';
+      }
+
+      return this._buildResult(type, equation, x, explanation);
+    },
+
+    // 난이도 1: ax - b = c (뺄셈 형태)
+    _generateSubtractForm: function(type) {
+      var x = utils.randInt(2, 9);
+      var a = utils.randInt(2, 5);
+      var b = utils.randInt(1, a * x - 1);
+      var c = a * x - b;
+
+      var equation = utils.coeffStr(a, 'x', true) + ' - ' + b + ' = ' + c;
+      var explanation = '양변에 $' + b + '$을 더하면 $' + a + 'x = ' + (c + b) + '$, 양변을 $' + a + '$로 나누면 $x = ' + x + '$';
+
+      return this._buildResult(type, equation, x, explanation);
+    },
+
+    // 난이도 1: c = ax + b (좌우 반전 형태)
+    _generateReverseForm: function(type) {
+      var x = utils.randInt(1, 9);
+      var a = utils.randInt(2, 5);
+      var b = utils.randInt(1, 9);
+      var c = a * x + b;
+
+      var equation = c + ' = ' + utils.coeffStr(a, 'x', true) + utils.constStr(b, false);
+      var explanation = '좌변과 우변을 바꾸면 $' + utils.coeffStr(a, 'x', true) + utils.constStr(b, false) + ' = ' + c + '$, 정리하면 $x = ' + x + '$';
+
+      return this._buildResult(type, equation, x, explanation);
+    },
+
+    // 난이도 2: a(x + b) = c (단순 분배법칙)
+    _generateSimpleDistrib: function(type) {
+      var x = utils.randIntNonZero(-8, 8);
+      var a = utils.randIntNonZero(2, 5);
+      var b = utils.randIntNonZero(-6, 6);
+      var c = a * (x + b);
+
+      var equation = a + '(' + 'x' + utils.constStr(b, false) + ') = ' + c;
+      var explanation = '분배법칙으로 전개하면 $' + utils.coeffStr(a, 'x', true) + utils.constStr(a * b, false) + ' = ' + c + '$, 정리하면 $x = ' + x + '$';
+
+      return this._buildResult(type, equation, x, explanation);
+    },
+
+    // 난이도 2: 음수 계수 방정식 -ax + b = c
+    _generateNegativeCoeff: function(type) {
+      var x = utils.randIntNonZero(-8, 8);
+      var a = utils.randInt(-5, -2);
+      var b = utils.randIntNonZero(-10, 10);
+      var c = a * x + b;
+
+      var equation = utils.coeffStr(a, 'x', true) + utils.constStr(b, false) + ' = ' + c;
+      var explanation = '$' + equation + '$에서 이항하면 $' + utils.coeffStr(a, 'x', true) + ' = ' + (c - b) + '$, 양변을 $' + a + '$로 나누면 $x = ' + x + '$';
+
+      return this._buildResult(type, equation, x, explanation);
     },
 
     // 난이도 2: ax + b = c (x가 음수일 수 있음, 두 단계)

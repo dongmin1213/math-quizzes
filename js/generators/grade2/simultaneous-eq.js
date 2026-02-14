@@ -177,6 +177,45 @@
     };
   }
 
+  // x, y 모두 구하기 (순서쌍)
+  function generateFindXY(difficulty) {
+    var sys = generateSystem(difficulty);
+    var eq1 = eqToLatex(sys.a1, sys.b1, sys.c1);
+    var eq2 = eqToLatex(sys.a2, sys.b2, sys.c2);
+
+    var questionText = '다음 연립방정식의 해 $(x, y)$를 구하시오.\n$$\\begin{cases} ' + eq1 + ' \\\\ ' + eq2 + ' \\end{cases}$$';
+    var questionLatex = '\\begin{cases} ' + eq1 + ' \\\\ ' + eq2 + ' \\end{cases}';
+    var correctAnswer = '(' + sys.x + ', ' + sys.y + ')';
+
+    var explanation = '가감법 또는 대입법을 이용하면 $x = ' + sys.x + '$, $y = ' + sys.y + '$\n';
+    explanation += '따라서 해는 $' + correctAnswer + '$';
+
+    var choices = ['$' + correctAnswer + '$'];
+    choices.push('$(' + sys.y + ', ' + sys.x + ')$');
+    choices.push('$(' + (-sys.x) + ', ' + sys.y + ')$');
+    choices.push('$(' + sys.x + ', ' + (-sys.y) + ')$');
+
+    choices = utils.unique(choices);
+    var _safe = 0;
+    while (choices.length < 4 && _safe++ < 20) {
+      choices.push('$(' + (sys.x + _safe) + ', ' + (sys.y - _safe) + ')$');
+      choices = utils.unique(choices);
+    }
+    choices = choices.slice(0, 4);
+    var correctChoice = choices[0];
+    choices = utils.shuffle(choices);
+    var answerIndex = choices.indexOf(correctChoice);
+
+    return {
+      questionText: questionText,
+      questionLatex: questionLatex,
+      answer: correctAnswer,
+      answerIndex: answerIndex,
+      choices: choices,
+      explanation: explanation
+    };
+  }
+
   MathQuiz.generators['grade2-simultaneous-eq'] = {
     meta: {
       grade: 2,
@@ -190,9 +229,9 @@
 
       var subtype;
       if (difficulty <= 1) {
-        subtype = utils.randChoice(['findX', 'findY']);
+        subtype = utils.randChoice(['findX', 'findY', 'findXY']);
       } else {
-        subtype = utils.randChoice(['findX', 'findY', 'findXplusY']);
+        subtype = utils.randChoice(['findX', 'findY', 'findXplusY', 'findXY']);
       }
 
       var result;
@@ -200,8 +239,10 @@
         result = generateFindX(difficulty);
       } else if (subtype === 'findY') {
         result = generateFindY(difficulty);
-      } else {
+      } else if (subtype === 'findXplusY') {
         result = generateFindXplusY(difficulty);
+      } else {
+        result = generateFindXY(difficulty);
       }
 
       return {

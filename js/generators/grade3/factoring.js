@@ -16,9 +16,9 @@
 
       var subTypes;
       if (difficulty === 1) {
-        subTypes = ['common-factor', 'perfect-square-simple'];
+        subTypes = ['common-factor', 'perfect-square-simple', 'two-term-common'];
       } else if (difficulty === 2) {
-        subTypes = ['difference-of-squares', 'perfect-square-trinomial'];
+        subTypes = ['difference-of-squares', 'perfect-square-trinomial', 'simple-trinomial'];
       } else {
         subTypes = ['general-trinomial', 'general-trinomial-hard', 'grouped'];
       }
@@ -90,7 +90,86 @@
           break;
         }
 
+        case 'two-term-common': {
+          // 두 항의 공통인수 (계수 있는): a²x + ab = a(ax + b)
+          var cf = utils.randInt(2, 6);
+          var v1 = utils.randIntNonZero(-5, 5);
+          var v2 = utils.randIntNonZero(-5, 5);
+          while (v1 === v2) { v2 = utils.randIntNonZero(-5, 5); }
+
+          // cf(v1x + v2) = cf*v1*x + cf*v2
+          var termA = cf * v1;
+          var termB = cf * v2;
+
+          var expandedLatex = utils.coeffStr(termA, 'x', true) + utils.constStr(termB, false);
+          var innerLatex = utils.coeffStr(v1, 'x', true) + utils.constStr(v2, false);
+          var factoredLatex = cf + '(' + innerLatex + ')';
+
+          questionText = '$' + expandedLatex + '$ 을 인수분해하시오.';
+          questionLatex = expandedLatex;
+          answer = '$' + factoredLatex + '$';
+          explanation = '공통인수 $' + cf + '$으로 묶으면 $' + factoredLatex + '$';
+
+          if (type === 'multiple-choice') {
+            choices = [
+              '$' + factoredLatex + '$',
+              '$' + v1 + '(' + utils.coeffStr(cf, 'x', true) + utils.constStr(v2, false) + ')$',
+              '$' + cf + '(' + utils.coeffStr(v1, 'x', true) + utils.constStr(-v2, false) + ')$',
+              '$' + (cf + 1) + '(' + utils.coeffStr(v1, 'x', true) + utils.constStr(v2, false) + ')$'
+            ];
+            choices = utils.unique(choices);
+            var _safe = 0;
+            while (choices.length < 4 && _safe++ < 20) {
+              choices.push('$' + (cf - 1) + '(' + utils.coeffStr(v1 + _safe, 'x', true) + utils.constStr(v2, false) + ')$');
+              choices = utils.unique(choices);
+            }
+            choices = choices.slice(0, 4);
+            choices = utils.shuffle(choices);
+            answerIndex = choices.indexOf(answer);
+          }
+          break;
+        }
+
         // ===== 난이도 2 =====
+        case 'simple-trinomial': {
+          // 간단한 이차식: x² + bx + c = (x+p)(x+q) (p+q=b, pq=c)
+          var p = utils.randIntNonZero(-6, 6);
+          var q = utils.randIntNonZero(-6, 6);
+          while (p === q || p + q === 0) { q = utils.randIntNonZero(-6, 6); }
+
+          var bCoeff = p + q;
+          var cConst = p * q;
+
+          var expandedLatex = 'x^2' + utils.coeffStr(bCoeff, 'x', false) + utils.constStr(cConst, false);
+          var pSign = p > 0 ? '+' : '';
+          var qSign = q > 0 ? '+' : '';
+          var factoredLatex = '(x' + pSign + p + ')(x' + qSign + q + ')';
+
+          questionText = '$' + expandedLatex + '$ 을 인수분해하시오.';
+          questionLatex = expandedLatex;
+          answer = '$' + factoredLatex + '$';
+          explanation = '합이 $' + bCoeff + '$이고 곱이 $' + cConst + '$인 두 수: $' + p + '$, $' + q + '$\n따라서 $' + expandedLatex + ' = ' + factoredLatex + '$';
+
+          if (type === 'multiple-choice') {
+            choices = [
+              '$' + factoredLatex + '$',
+              '$(x' + pSign + p + ')(x' + (q > 0 ? '-' : '+') + Math.abs(q) + ')$',
+              '$(x' + (p > 0 ? '-' : '+') + Math.abs(p) + ')(x' + qSign + q + ')$',
+              '$(x' + pSign + q + ')(x' + qSign + p + ')$'
+            ];
+            choices = utils.unique(choices);
+            var _safe2 = 0;
+            while (choices.length < 4 && _safe2++ < 20) {
+              choices.push('$(x+' + (p + _safe2) + ')(x+' + (q - _safe2) + ')$');
+              choices = utils.unique(choices);
+            }
+            choices = choices.slice(0, 4);
+            choices = utils.shuffle(choices);
+            answerIndex = choices.indexOf(answer);
+          }
+          break;
+        }
+
         case 'difference-of-squares': {
           // 합차 공식: a²x² - b² = (ax+b)(ax-b)
           var a = utils.randChoice([1, 2, 3]);

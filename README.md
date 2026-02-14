@@ -90,6 +90,10 @@ python3 -m http.server 8080
 
 URL 예시: `https://script.google.com/macros/s/AKfycbx어쩌구저쩌구.../exec`
 
+> **Code.gs를 수정한 경우 (업데이트 배포)**:
+> Apps Script 편집기에서 **배포** → **배포 관리** → 연필 아이콘(✏️) 클릭 → 버전을 **새 버전**으로 선택 → **배포** 클릭.
+> 기존 URL은 그대로 유지됩니다.
+
 #### 4-3. config.js에 URL 붙여넣기
 
 `js/config.js` 파일을 열면 상단에 이런 안내가 있습니다:

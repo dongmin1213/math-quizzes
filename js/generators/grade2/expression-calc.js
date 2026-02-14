@@ -127,6 +127,134 @@
     }
   }
 
+  // 단항식 나눗셈 문제: a^m ÷ a^n = a^(m-n)
+  function generateMonomialDivision(difficulty) {
+    var base = utils.randChoice(['a', 'x', 'y']);
+    var n = utils.randInt(2, 4);
+    var m = n + utils.randInt(1, 4); // m > n 보장
+    var answer = m - n;
+
+    if (difficulty >= 2) {
+      // 계수 포함: (coeff1 * base^m) ÷ (coeff2 * base^n)
+      var coeff2 = utils.randChoice([2, 3, 4, 5]);
+      var quotientCoeff = utils.randIntNonZero(-4, 4);
+      var coeff1 = quotientCoeff * coeff2;
+
+      var term1 = (coeff1 === 1 ? '' : (coeff1 === -1 ? '-' : coeff1)) + base + '^{' + m + '}';
+      var term2 = coeff2 + base + '^{' + n + '}';
+      var resCoeffStr = quotientCoeff === 1 ? '' : (quotientCoeff === -1 ? '-' : String(quotientCoeff));
+      var answerLatex = answer === 1 ? resCoeffStr + base : resCoeffStr + base + '^{' + answer + '}';
+
+      var questionText = '$' + term1 + ' \\div ' + term2 + '$ 을 계산하시오.';
+      var explanation = '$' + term1 + ' \\div ' + term2 + ' = ' + answerLatex + '$';
+
+      var wrongAnswers = [
+        (quotientCoeff === 1 ? '' : quotientCoeff) + base + '^{' + (m + n) + '}',
+        (coeff1 + coeff2) + base + '^{' + answer + '}',
+        resCoeffStr + base + '^{' + (m * n) + '}'
+      ];
+
+      var choices = ['$' + answerLatex + '$'];
+      for (var i = 0; i < wrongAnswers.length; i++) {
+        choices.push('$' + wrongAnswers[i] + '$');
+      }
+      choices = utils.unique(choices);
+      var _safe = 0;
+      while (choices.length < 4 && _safe++ < 20) {
+        choices.push('$' + (quotientCoeff + _safe) + base + '^{' + (answer + _safe) + '}$');
+        choices = utils.unique(choices);
+      }
+      choices = choices.slice(0, 4);
+      var correctChoice = choices[0];
+      choices = utils.shuffle(choices);
+      var answerIndex = choices.indexOf(correctChoice);
+
+      return {
+        questionText: questionText,
+        questionLatex: term1 + ' \\div ' + term2,
+        answer: '$' + answerLatex + '$',
+        answerIndex: answerIndex,
+        choices: choices,
+        explanation: explanation
+      };
+    }
+
+    // 단순: a^m ÷ a^n
+    var questionText = '$' + base + '^{' + m + '} \\div ' + base + '^{' + n + '}$ 을 계산하시오.';
+    var answerStr = answer === 1 ? '$' + base + '$' : '$' + base + '^{' + answer + '}$';
+    var answerLatex2 = answer === 1 ? base : base + '^{' + answer + '}';
+    var explanation = '$' + base + '^{' + m + '} \\div ' + base + '^{' + n + '} = ' + base + '^{' + m + '-' + n + '} = ' + answerLatex2 + '$';
+
+    var distractors = utils.generateDistractors(answer, 3, function() {
+      return utils.randChoice([m + n, m * n, answer + 1, Math.abs(answer - 1)]);
+    });
+
+    var choices = ['$' + answerLatex2 + '$'];
+    for (var i = 0; i < distractors.length; i++) {
+      choices.push('$' + base + '^{' + distractors[i] + '}$');
+    }
+    var shuffled = utils.shuffle([0, 1, 2, 3]);
+    var reordered = shuffled.map(function(idx) { return choices[idx]; });
+    var answerIndex = shuffled.indexOf(0);
+
+    return {
+      questionText: questionText,
+      questionLatex: base + '^{' + m + '} \\div ' + base + '^{' + n + '}',
+      answer: answerStr,
+      answerIndex: answerIndex,
+      choices: reordered,
+      explanation: explanation
+    };
+  }
+
+  // 다항식 ÷ 단항식 (난이도 3)
+  function generatePolynomialDivision() {
+    // (ax^2 + bx) ÷ x = ax + b
+    var divisor = utils.randIntNonZero(1, 4);
+    var resA = utils.randIntNonZero(-5, 5);
+    var resB = utils.randIntNonZero(-8, 8);
+
+    var polyA = resA * divisor;
+    var polyB = resB * divisor;
+
+    var polyLatex = utils.coeffStr(polyA, 'x^{2}', true) + utils.coeffStr(polyB, 'x', false);
+    var divisorLatex = divisor === 1 ? 'x' : divisor + 'x';
+    var answerLatex = utils.coeffStr(resA, 'x', true) + utils.constStr(resB, false);
+
+    var questionText = '$(' + polyLatex + ') \\div ' + divisorLatex + '$ 을 계산하시오.';
+    var explanation = '$(' + polyLatex + ') \\div ' + divisorLatex + ' = ' + answerLatex + '$';
+
+    var wrongAnswers = [
+      utils.coeffStr(resA, 'x', true) + utils.constStr(-resB, false),
+      utils.coeffStr(-resA, 'x', true) + utils.constStr(resB, false),
+      utils.coeffStr(polyA, 'x', true) + utils.constStr(resB, false)
+    ];
+
+    var choices = ['$' + answerLatex + '$'];
+    for (var i = 0; i < wrongAnswers.length; i++) {
+      choices.push('$' + wrongAnswers[i] + '$');
+    }
+    choices = utils.unique(choices);
+    var _safe = 0;
+    while (choices.length < 4 && _safe++ < 20) {
+      choices.push('$' + utils.coeffStr(resA + _safe, 'x', true) + utils.constStr(resB + _safe, false) + '$');
+      choices = utils.unique(choices);
+    }
+    choices = choices.slice(0, 4);
+    var correctChoice = choices[0];
+    choices = utils.shuffle(choices);
+    var answerIndex = choices.indexOf(correctChoice);
+
+    return {
+      questionText: questionText,
+      questionLatex: '(' + polyLatex + ') \\div ' + divisorLatex,
+      answer: '$' + answerLatex + '$',
+      answerIndex: answerIndex,
+      choices: choices,
+      explanation: explanation
+    };
+  }
+
   // 다항식 덧셈/뺄셈 문제 생성
   function generatePolynomialAddSub(difficulty) {
     if (difficulty <= 1) {
@@ -290,18 +418,22 @@
       // 난이도에 따라 하위 유형 선택
       var subtype;
       if (difficulty === 1) {
-        subtype = utils.randChoice(['monomial', 'poly-addsub']);
+        subtype = utils.randChoice(['monomial', 'poly-addsub', 'monomial-div']);
       } else if (difficulty === 2) {
-        subtype = utils.randChoice(['monomial', 'poly-addsub', 'poly-mult']);
+        subtype = utils.randChoice(['monomial', 'poly-addsub', 'poly-mult', 'monomial-div']);
       } else {
-        subtype = utils.randChoice(['monomial', 'poly-mult', 'poly-mult']);
+        subtype = utils.randChoice(['monomial', 'poly-mult', 'poly-mult', 'poly-div']);
       }
 
       var result;
       if (subtype === 'monomial') {
         result = generateMonomialOperation(difficulty);
+      } else if (subtype === 'monomial-div') {
+        result = generateMonomialDivision(difficulty);
       } else if (subtype === 'poly-addsub') {
         result = generatePolynomialAddSub(1);
+      } else if (subtype === 'poly-div') {
+        result = generatePolynomialDivision();
       } else {
         result = generatePolynomialAddSub(difficulty);
       }

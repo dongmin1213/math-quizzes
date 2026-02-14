@@ -76,6 +76,88 @@
     };
   }
 
+  // 난이도 1: 함수값 구하기 f(a) = ?
+  function generateFunctionValue() {
+    var m = utils.randIntNonZero(-5, 5);
+    var b = utils.randInt(-8, 8);
+    var xVal = utils.randIntNonZero(-4, 4);
+    var answer = m * xVal + b;
+
+    var eqLatex = linearEqLatex(m, 1, b);
+    var questionText = '일차함수 $' + eqLatex + '$에서 $x = ' + xVal + '$일 때, $y$의 값을 구하시오.';
+    var explanation = '$' + eqLatex + '$에 $x = ' + xVal + '$을 대입하면\n$y = ' + m + ' \\times ' + (xVal < 0 ? '(' + xVal + ')' : xVal) + utils.constStr(b, false) + ' = ' + answer + '$';
+
+    var distractors = utils.generateDistractors(answer, 3, function() {
+      return utils.randChoice([answer + utils.randIntNonZero(-3, 3), -answer, m * xVal, b]);
+    });
+    var choices = ['$' + answer + '$'];
+    for (var i = 0; i < distractors.length; i++) {
+      choices.push('$' + distractors[i] + '$');
+    }
+    choices = utils.unique(choices);
+    var _safe = 0;
+    while (choices.length < 4 && _safe++ < 20) {
+      choices.push('$' + (answer + choices.length + 1) + '$');
+      choices = utils.unique(choices);
+    }
+    choices = choices.slice(0, 4);
+    var correctChoice = choices[0];
+    choices = utils.shuffle(choices);
+    var answerIndex = choices.indexOf(correctChoice);
+
+    return {
+      questionText: questionText,
+      questionLatex: eqLatex,
+      answer: String(answer),
+      answerIndex: answerIndex,
+      choices: choices,
+      explanation: explanation,
+      svg: null
+    };
+  }
+
+  // 난이도 1: 점이 그래프 위에 있는지 판별
+  function generatePassesThrough() {
+    var m = utils.randIntNonZero(-4, 4);
+    var b = utils.randInt(-6, 6);
+
+    var eqLatex = linearEqLatex(m, 1, b);
+
+    // 정답 점 (그래프 위에 있는 점)
+    var xVal = utils.randIntNonZero(-4, 4);
+    var yVal = m * xVal + b;
+
+    // 거짓 점들 (그래프 위에 없는 점)
+    var choices = ['$(' + xVal + ',\\; ' + yVal + ')$'];
+    choices.push('$(' + xVal + ',\\; ' + (yVal + 1) + ')$');
+    choices.push('$(' + xVal + ',\\; ' + (yVal - 1) + ')$');
+    choices.push('$(' + (xVal + 1) + ',\\; ' + yVal + ')$');
+
+    choices = utils.unique(choices);
+    var _safe = 0;
+    while (choices.length < 4 && _safe++ < 20) {
+      choices.push('$(' + (xVal + choices.length) + ',\\; ' + (yVal + choices.length) + ')$');
+      choices = utils.unique(choices);
+    }
+    choices = choices.slice(0, 4);
+    var correctChoice = choices[0];
+    choices = utils.shuffle(choices);
+    var answerIndex = choices.indexOf(correctChoice);
+
+    var questionText = '일차함수 $' + eqLatex + '$의 그래프가 지나는 점을 고르시오.';
+    var explanation = '$x = ' + xVal + '$일 때 $y = ' + m + ' \\times ' + (xVal < 0 ? '(' + xVal + ')' : xVal) + utils.constStr(b, false) + ' = ' + yVal + '$이므로 $(' + xVal + ',\\; ' + yVal + ')$을 지납니다.';
+
+    return {
+      questionText: questionText,
+      questionLatex: eqLatex,
+      answer: '$(' + xVal + ',\\; ' + yVal + ')$',
+      answerIndex: answerIndex,
+      choices: choices,
+      explanation: explanation,
+      svg: null
+    };
+  }
+
   // 난이도 2: 두 점을 지나는 직선의 방정식 구하기
   function generateFromTwoPoints() {
     // backward: 기울기와 y절편을 먼저 결정
@@ -338,7 +420,7 @@
 
       var result;
       if (difficulty <= 1) {
-        result = generateSlopeIntercept();
+        result = utils.randChoice([generateSlopeIntercept, generateFunctionValue, generatePassesThrough])();
       } else if (difficulty === 2) {
         result = utils.randChoice([generateFromTwoPoints, generateGraphReading])();
       } else {

@@ -252,8 +252,9 @@ svg.dot(x, y, opts)                          // 점
 
 // 고수준 도형
 svg.triangle(ax, ay, bx, by, cx, cy, labels) // 삼각형
-svg.rightAngle(vx, vy, p1x, p1y, p2x, p2y)  // 직각 표시
-svg.coordinateGrid(xMin, xMax, yMin, yMax, w, h) // 좌표평면
+// labels: {A: '꼭짓점', B: '왼쪽아래', C: '오른쪽아래'}
+svg.rightAngle(vx, vy, p1x, p1y, p2x, p2y, size) // 직각 표시 (size 기본값 12)
+svg.coordinateGrid(xMin, xMax, yMin, yMax, w, h, opts) // 좌표평면
 // → {svg: 문자열, toPixel: function(x,y)}
 ```
 

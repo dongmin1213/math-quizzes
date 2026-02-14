@@ -147,6 +147,166 @@
     };
   }
 
+  // 난이도 1-2: 괄호가 있는 부등식 a(x + b) < c
+  function generateParenInequality() {
+    var a = utils.randIntNonZero(2, 5);
+    var b = utils.randIntNonZero(-8, 8);
+    var ineqIdx = utils.randInt(0, 3);
+    var ineq = ineqSymbols[ineqIdx];
+
+    var xBound = utils.randIntNonZero(-6, 6);
+    var c = a * (xBound + b);
+
+    var resultIneq = a > 0 ? ineq : reverseIneq(ineq);
+    var answerLatex = 'x ' + resultIneq + ' ' + xBound;
+
+    var inner = 'x' + utils.constStr(b, false);
+    var questionText = '부등식 $' + a + '(' + inner + ') ' + ineq + ' ' + c + '$을 풀어 $x$의 범위를 구하시오.';
+    var questionLatex = a + '(' + inner + ') ' + ineq + ' ' + c;
+
+    var explanation = '양변을 $' + a + '$로 나누면\n';
+    explanation += '$' + inner + ' ' + resultIneq + ' ' + (c / a) + '$\n';
+    explanation += '정리하면 $' + answerLatex + '$';
+
+    var wrongAnswers = [
+      'x ' + reverseIneq(resultIneq) + ' ' + xBound,
+      'x ' + resultIneq + ' ' + (-xBound),
+      'x ' + resultIneq + ' ' + (xBound + b)
+    ];
+
+    var choices = ['$' + answerLatex + '$'];
+    for (var i = 0; i < wrongAnswers.length; i++) {
+      choices.push('$' + wrongAnswers[i] + '$');
+    }
+    choices = utils.unique(choices);
+    var _safe = 0;
+    while (choices.length < 4 && _safe++ < 20) {
+      choices.push('$x ' + utils.randChoice(ineqSymbols) + ' ' + (xBound + utils.randIntNonZero(-4, 4)) + '$');
+      choices = utils.unique(choices);
+    }
+    choices = choices.slice(0, 4);
+    var correctChoice = choices[0];
+    choices = utils.shuffle(choices);
+    var answerIndex = choices.indexOf(correctChoice);
+
+    return {
+      questionText: questionText,
+      questionLatex: questionLatex,
+      answer: '$' + answerLatex + '$',
+      answerIndex: answerIndex,
+      choices: choices,
+      explanation: explanation
+    };
+  }
+
+  // 난이도 1: ax > b 형태 (상수항 없는 단순)
+  function generateOneStepInequality() {
+    var a = utils.randIntNonZero(-6, 6);
+    var ineqIdx = utils.randInt(0, 3);
+    var ineq = ineqSymbols[ineqIdx];
+
+    var xBound = utils.randIntNonZero(-8, 8);
+    var c = a * xBound;
+
+    var resultIneq = a > 0 ? ineq : reverseIneq(ineq);
+    var answerLatex = 'x ' + resultIneq + ' ' + xBound;
+
+    var lhs = utils.coeffStr(a, 'x', true);
+    var questionText = '부등식 $' + lhs + ' ' + ineq + ' ' + c + '$을 풀어 $x$의 범위를 구하시오.';
+    var questionLatex = lhs + ' ' + ineq + ' ' + c;
+
+    var explanation = '양변을 $' + a + '$로 나누면';
+    if (a < 0) explanation += ' (부등호 방향 반전)';
+    explanation += '\n$' + answerLatex + '$';
+
+    var wrongAnswers = [
+      'x ' + reverseIneq(resultIneq) + ' ' + xBound,
+      'x ' + resultIneq + ' ' + (-xBound),
+      'x ' + ineq + ' ' + xBound
+    ];
+
+    var choices = ['$' + answerLatex + '$'];
+    for (var i = 0; i < wrongAnswers.length; i++) {
+      choices.push('$' + wrongAnswers[i] + '$');
+    }
+    choices = utils.unique(choices);
+    var _safe = 0;
+    while (choices.length < 4 && _safe++ < 20) {
+      choices.push('$x ' + utils.randChoice(ineqSymbols) + ' ' + (xBound + utils.randIntNonZero(-4, 4)) + '$');
+      choices = utils.unique(choices);
+    }
+    choices = choices.slice(0, 4);
+    var correctChoice = choices[0];
+    choices = utils.shuffle(choices);
+    var answerIndex = choices.indexOf(correctChoice);
+
+    return {
+      questionText: questionText,
+      questionLatex: questionLatex,
+      answer: '$' + answerLatex + '$',
+      answerIndex: answerIndex,
+      choices: choices,
+      explanation: explanation
+    };
+  }
+
+  // 난이도 3: 연립부등식 (두 부등식 동시에 만족)
+  function generateSystemInequality() {
+    // backward: x의 범위를 먼저 정함
+    var lower = utils.randIntNonZero(-6, 4);
+    var upper = lower + utils.randInt(3, 7);
+
+    // 부등식 1: a1*x + b1 >= c1 (하한)
+    var a1 = utils.randIntNonZero(1, 4);
+    var b1 = utils.randIntNonZero(-10, 10);
+    var c1 = a1 * lower + b1;
+
+    // 부등식 2: a2*x + b2 < c2 (상한)
+    var a2 = utils.randIntNonZero(1, 4);
+    var b2 = utils.randIntNonZero(-10, 10);
+    var c2 = a2 * upper + b2;
+
+    var lhs1 = utils.coeffStr(a1, 'x', true) + utils.constStr(b1, false);
+    var lhs2 = utils.coeffStr(a2, 'x', true) + utils.constStr(b2, false);
+
+    var questionText = '연립부등식 $\\begin{cases} ' + lhs1 + ' \\geq ' + c1 + ' \\\\ ' + lhs2 + ' < ' + c2 + ' \\end{cases}$을 만족하는 정수 $x$의 개수를 구하시오.';
+    var questionLatex = '\\begin{cases} ' + lhs1 + ' \\geq ' + c1 + ' \\\\ ' + lhs2 + ' < ' + c2 + ' \\end{cases}';
+
+    var count = upper - lower; // lower <= x < upper 이므로 개수 = upper - lower
+
+    var explanation = '첫째 부등식에서 $x \\geq ' + lower + '$\n';
+    explanation += '둘째 부등식에서 $x < ' + upper + '$\n';
+    explanation += '따라서 $' + lower + ' \\leq x < ' + upper + '$\n';
+    explanation += '정수: $' + lower + ', ' + (lower + 1) + ', \\ldots, ' + (upper - 1) + '$ → $' + count + '$개';
+
+    var answer = String(count);
+
+    var distractors = utils.generateDistractors(count, 3, function() {
+      return count + utils.randChoice([-2, -1, 1, 2, 3]);
+    });
+    distractors = distractors.filter(function(d) { return d > 0; });
+    while (distractors.length < 3) {
+      distractors.push(count + distractors.length + 1);
+    }
+
+    var choices = ['$' + count + '$'];
+    for (var i = 0; i < 3; i++) {
+      choices.push('$' + distractors[i] + '$');
+    }
+    var shuffled = utils.shuffle([0, 1, 2, 3]);
+    var reordered = shuffled.map(function(idx) { return choices[idx]; });
+    var answerIndex = shuffled.indexOf(0);
+
+    return {
+      questionText: questionText,
+      questionLatex: questionLatex,
+      answer: answer,
+      answerIndex: answerIndex,
+      choices: reordered,
+      explanation: explanation
+    };
+  }
+
   // 난이도 3: 정수 해의 개수 구하기
   function generateCountIntegerSolutions() {
     var a = utils.randIntNonZero(-5, 5);
@@ -239,11 +399,11 @@
 
       var result;
       if (difficulty <= 1) {
-        result = generateSimpleInequality();
+        result = utils.randChoice([generateSimpleInequality, generateOneStepInequality, generateParenInequality])();
       } else if (difficulty === 2) {
-        result = utils.randChoice([generateTwoSideInequality, generateSimpleInequality])();
+        result = utils.randChoice([generateSimpleInequality, generateTwoSideInequality, generateParenInequality])();
       } else {
-        result = utils.randChoice([generateTwoSideInequality, generateCountIntegerSolutions])();
+        result = utils.randChoice([generateTwoSideInequality, generateCountIntegerSolutions, generateSystemInequality])();
       }
 
       return {
