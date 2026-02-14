@@ -443,12 +443,12 @@
         var r = sorted[j];
         var time = r['제출시간'] ? new Date(r['제출시간']).toLocaleString('ko-KR') : '';
         html += '<tr>';
-        html += '<td><strong>' + escapeAttr(r['학생이름'] || '') + '</strong></td>';
-        html += '<td>중' + escapeAttr(r['학년'] || '') + '</td>';
-        html += '<td>' + escapeAttr(r['반'] || '') + '</td>';
-        html += '<td>' + escapeAttr(r['단원'] || '') + '</td>';
-        html += '<td>' + (r['점수'] || 0) + '/' + (r['총문제수'] || 0) + '</td>';
-        html += '<td>' + (r['정답률'] || '') + '</td>';
+        html += '<td><strong>' + escapeAttr(r['학생이름'] != null ? r['학생이름'] : '') + '</strong></td>';
+        html += '<td>중' + escapeAttr(r['학년'] != null ? r['학년'] : '') + '</td>';
+        html += '<td>' + escapeAttr(r['반'] != null ? r['반'] : '') + '</td>';
+        html += '<td>' + escapeAttr(r['단원'] != null ? r['단원'] : '') + '</td>';
+        html += '<td>' + (r['점수'] != null ? r['점수'] : 0) + '/' + (r['총문제수'] != null ? r['총문제수'] : 0) + '</td>';
+        html += '<td>' + (r['정답률'] != null ? r['정답률'] : '') + '</td>';
         html += '<td style="font-size:12px;color:var(--text-light)">' + time + '</td>';
         html += '</tr>';
       }
@@ -571,7 +571,7 @@
   };
 
   function escapeAttr(str) {
-    if (!str) return '';
+    if (str === null || str === undefined || str === '') return '';
     return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }

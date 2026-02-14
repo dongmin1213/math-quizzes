@@ -135,7 +135,7 @@
         html += '</div>';
       } else {
         // 주관식
-        var val = state.answers[index] || '';
+        var val = (state.answers[index] !== null && state.answers[index] !== undefined) ? state.answers[index] : '';
         html += '<input type="text" class="answer-input" id="shortAnswer" ' +
           'inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" ' +
           'placeholder="답을 입력하세요" value="' + this.escapeAttr(val) + '" ' +
@@ -174,7 +174,7 @@
     },
 
     onShortAnswerInput: function(value) {
-      state.answers[state.currentIndex] = value || null;
+      state.answers[state.currentIndex] = (value === '' || value === undefined) ? null : value;
       this.saveAnswers();
       this.renderProgressDots();
     },
@@ -338,7 +338,7 @@
     },
 
     escapeAttr: function(str) {
-      if (!str) return '';
+      if (str === null || str === undefined || str === '') return '';
       return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     },
